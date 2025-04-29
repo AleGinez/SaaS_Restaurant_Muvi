@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pedidos - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="pedidos_form.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/150/80" alt="Logo Restaurante Pesqueiro" class="logo">
+                <h2>Recanto Rancho do Peixe</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Foto Usuário" class="user-avatar">
+                <div class="user-details">
+                    <span class="user-name">Paulo Palazi</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a href="#dashboard">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu active open">
+                        <a href="#pedidos">
+                            <i class="fas fa-utensils"></i>
+                            <span>Pedidos</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li class="active"><a href="#novos-pedidos">Novos Pedidos</a></li>
+                            <li><a href="#pedidos-mesa">Pedidos de Mesa</a></li>
+                            <li><a href="#pedidos-viagem">Pedidos para Viagem</a></li>
+                            <li><a href="#pedidos-delivery">Pedidos de Delivery</a></li>
+                            <li><a href="#pedidos-andamento">Pedidos em Andamento</a></li>
+                            <li><a href="#cancelar-pedidos">Cancelamento de Pedidos</a></li>
+                            <li><a href="#historico-pedidos">Histórico de Pedidos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Outros itens de menu (reduzidos para simplificar) -->
+                    <li class="menu-item has-submenu">
+                        <a href="#cardapio">
+                            <i class="fas fa-book-open"></i>
+                            <span>Cardápio</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#mesas-layout">
+                            <i class="fas fa-chair"></i>
+                            <span>Mesas e Layout</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#clientes">
+                            <i class="fas fa-user-friends"></i>
+                            <span>Clientes</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#suporte">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Suporte</span>
+                </a>
+                <a href="#sair">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <div class="page-header">
+                    <h1>Novo Pedido</h1>
+                    <div class="breadcrumb">
+                        <span>Home</span> / <span>Pedidos</span> / <span>Novo Pedido</span>
+                    </div>
+                </div>
+                
+                <!-- Formulário de Pedido -->
+                <form id="pedido-form" class="pedido-form" autocomplete="off">
+                    <!-- Cabeçalho do Pedido -->
+                    <section class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-invoice"></i>
+                            Informações do Pedido
+                        </h2>
+                        <div class="card">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pedido-numero">Número do Pedido</label>
+                                    <input type="text" id="pedido-numero" readonly placeholder="Gerado automaticamente">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pedido-data">Data e Hora</label>
+                                    <input type="text" id="pedido-data" readonly placeholder="Gerado automaticamente">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pedido-status">Status</label>
+                                    <input type="text" id="pedido-status" value="Aberto" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pedido-tipo">Tipo de Pedido</label>
+                                    <select id="pedido-tipo">
+                                        <option value="local" selected>Mesa</option>
+                                        <option value="viagem">Viagem</option>
+                                        <option value="delivery">Delivery</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Seleção de Mesa com Mapa Visual -->
+                    <section class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-chair"></i>
+                            Seleção de Mesa
+                        </h2>
+                        <div class="card">
+                            <div class="tab-container">
+                                <div class="tab-header">
+                                    <button type="button" class="tab-btn active" data-tab="mapa-mesas">Mapa de Mesas</button>
+                                    <button type="button" class="tab-btn" data-tab="lista-mesas">Lista de Mesas</button>
+                                </div>
+                                
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="mapa-mesas">
+                                        <div class="mapa-areas">
+                                            <button type="button" class="area-btn active" data-area="salao">Salão</button>
+                                            <button type="button" class="area-btn" data-area="varanda">Varanda</button>
+                                            <button type="button" class="area-btn" data-area="deck">Deck</button>
+                                        </div>
+                                        
+                                        <div class="mapa-container">
+                                            <!-- Mapa interativo de mesas -->
+                                            <div class="mesas-grid">
+                                                <div class="mesa livre" data-mesa-id="1" data-mesa-numero="01">
+                                                    <span class="mesa-number">01</span>
+                                                    <span class="mesa-status">Livre</span>
+                                                </div>
+                                                
+                                                <div class="mesa ocupada" data-mesa-id="2" data-mesa-numero="02">
+                                                    <span class="mesa-number">02</span>
+                                                    <span class="mesa-status">Ocupada</span>
+                                                    <span class="mesa-info">2 pessoas</span>
+                                                </div>
+                                                
+                                                <div class="mesa ocupada" data-mesa-id="3" data-mesa-numero="03">
+                                                    <span class="mesa-number">03</span>
+                                                    <span class="mesa-status">Ocupada</span>
+                                                    <span class="mesa-info">4 pessoas</span>
+                                                </div>
+                                                
+                                                <div class="mesa reservada" data-mesa-id="4" data-mesa-numero="04">
+                                                    <span class="mesa-number">04</span>
+                                                    <span class="mesa-status">Reservada</span>
+                                                    <span class="mesa-info">19:00</span>
+                                                </div>
+                                                
+                                                <div class="mesa livre" data-mesa-id="5" data-mesa-numero="05">
+                                                    <span class="mesa-number">05</span>
+                                                    <span class="mesa-status">Livre</span>
+                                                </div>
+                                                
+                                                <div class="mesa livre" data-mesa-id="6" data-mesa-numero="06">
+                                                    <span class="mesa-number">06</span>
+                                                    <span class="mesa-status">Livre</span>
+                                                </div>
+                                                
+                                                <div class="mesa livre" data-mesa-id="7" data-mesa-numero="07">
+                                                    <span class="mesa-number">07</span>
+                                                    <span class="mesa-status">Livre</span>
+                                                </div>
+                                                
+                                                <div class="mesa livre" data-mesa-id="8" data-mesa-numero="08">
+                                                    <span class="mesa-number">08</span>
+                                                    <span class="mesa-status">Livre</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane" id="lista-mesas">
+                                        <div class="form-group">
+                                            <label for="mesa-select">Selecionar Mesa</label>
+                                            <select id="mesa-select">
+                                                <option value="">Selecione uma mesa...</option>
+                                                <option value="1">Mesa 01 - Livre</option>
+                                                <option value="5">Mesa 05 - Livre</option>
+                                                <option value="6">Mesa 06 - Livre</option>
+                                                <option value="7">Mesa 07 - Livre</option>
+                                                <option value="8">Mesa 08 - Livre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="mesa-numero">Mesa Selecionada</label>
+                                    <input type="text" id="mesa-numero" readonly>
+                                    <input type="hidden" id="mesa-id">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="num-pessoas">Número de Pessoas</label>
+                                    <input type="number" id="num-pessoas" min="1" value="2">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Itens do Pedido -->
+                    <section class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list"></i>
+                            Itens do Pedido
+                        </h2>
+                        <div class="card">
+                            <div class="categoria-filtros">
+                                <button type="button" class="categoria-btn active" data-categoria="todos">Todos</button>
+                                <button type="button" class="categoria-btn" data-categoria="peixes">Peixes</button>
+                                <button type="button" class="categoria-btn" data-categoria="porcoes">Porções</button>
+                                <button type="button" class="categoria-btn" data-categoria="bebidas">Bebidas</button>
+                                <button type="button" class="categoria-btn" data-categoria="sobremesas">Sobremesas</button>
+                            </div>
+                            
+                            <div class="form-row item-add-row">
+                                <div class="form-group form-group-lg">
+                                    <label for="produto-select">Produto</label>
+                                    <div class="input-with-icon">
+                                        <input type="text" id="produto-busca" placeholder="Digite para buscar produto...">
+                                        <button type="button" class="icon-button" id="btn-buscar-produto">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <select id="produto-select" class="hidden">
+                                        <option value="">Selecione um produto...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="produto-quantidade">Quantidade</label>
+                                    <input type="number" id="produto-quantidade" min="1" value="1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="produto-preco">Preço Unitário</label>
+                                    <input type="text" id="produto-preco" readonly placeholder="R$ 0,00">
+                                    <input type="hidden" id="produto-id">
+                                </div>
+                                
+                                <div class="form-group btn-bottom">
+                                    <button type="button" class="btn" id="btn-adicionar-item">
+                                        <i class="fas fa-plus"></i> Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="produtos-rapidos">
+                                <h4>Adição Rápida</h4>
+                                <div class="produtos-rapidos-grid">
+                                    <button type="button" class="produto-rapido" data-id="1" data-nome="Peixe Frito" data-preco="78.50">
+                                        <i class="fas fa-fish"></i>
+                                        <span>Peixe Frito</span>
+                                    </button>
+                                    <button type="button" class="produto-rapido" data-id="2" data-nome="Porção Batatas" data-preco="35.00">
+                                        <i class="fas fa-french-fries"></i>
+                                        <span>Batatas</span>
+                                    </button>
+                                    <button type="button" class="produto-rapido" data-id="3" data-nome="Refrigerante" data-preco="8.00">
+                                        <i class="fas fa-glass"></i>
+                                        <span>Refrigerante</span>
+                                    </button>
+                                    <button type="button" class="produto-rapido" data-id="4" data-nome="Cerveja" data-preco="12.00">
+                                        <i class="fas fa-beer"></i>
+                                        <span>Cerveja</span>
+                                    </button>
+                                    <button type="button" class="produto-rapido" data-id="5" data-nome="Camarão Alho e Óleo" data-preco="98.00">
+                                        <i class="fas fa-shrimp"></i>
+                                        <span>Camarão</span>
+                                    </button>
+                                    <button type="button" class="produto-rapido" data-id="6" data-nome="Arroz" data-preco="15.00">
+                                        <i class="fas fa-bowl-rice"></i>
+                                        <span>Arroz</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="data-table" id="itens-pedido-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="50px">Item</th>
+                                            <th>Produto</th>
+                                            <th width="100px">Quantidade</th>
+                                            <th width="120px">Preço Unit.</th>
+                                            <th width="120px">Subtotal</th>
+                                            <th width="100px">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Itens adicionados dinamicamente por JS -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" class="text-right"><strong>Subtotal:</strong></td>
+                                            <td colspan="2"><span id="pedido-subtotal">R$ 0,00</span></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="item-observacao">Observações Gerais</label>
+                                    <textarea id="item-observacao" rows="3" placeholder="Ex: Peixe sem espinhas, fritura mais sequinha, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Totais e Pagamento -->
+                    <section class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-coins"></i>
+                            Pagamento
+                        </h2>
+                        <div class="card">
+                            <div class="totais-grid">
+                                <div class="totais-col">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pedido-desconto">Desconto (%)</label>
+                                            <input type="number" id="pedido-desconto" min="0" max="100" value="0">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="pedido-desconto-valor">Valor Desconto</label>
+                                            <input type="text" id="pedido-desconto-valor" placeholder="R$ 0,00" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pedido-taxa-servico">Taxa de Serviço (%)</label>
+                                            <input type="number" id="pedido-taxa-servico" min="0" max="20" value="10">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="pedido-taxa-valor">Valor Taxa</label>
+                                            <input type="text" id="pedido-taxa-valor" placeholder="R$ 0,00" readonly>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pedido-forma-pagamento">Forma de Pagamento</label>
+                                            <input type="text" id="pedido-forma-pagamento" readonly placeholder="Preenchido no fechamento">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="totais-col totais-resumo">
+                                    <div class="resumo-item">
+                                        <span class="resumo-label">Subtotal:</span>
+                                        <span class="resumo-valor" id="resumo-subtotal">R$ 0,00</span>
+                                    </div>
+                                    
+                                    <div class="resumo-item">
+                                        <span class="resumo-label">Desconto:</span>
+                                        <span class="resumo-valor" id="resumo-desconto">-R$ 0,00</span>
+                                    </div>
+                                    
+                                    <div class="resumo-item">
+                                        <span class="resumo-label">Taxa de Serviço:</span>
+                                        <span class="resumo-valor" id="resumo-taxa">+R$ 0,00</span>
+                                    </div>
+                                    
+                                    <div class="resumo-item total">
+                                        <span class="resumo-label">TOTAL:</span>
+                                        <span class="resumo-valor" id="resumo-total">R$ 0,00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Botões de Ação -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancelar">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        
+                        <button type="button" class="btn btn-info" id="btn-salvar-rascunho">
+                            <i class="fas fa-save"></i> Salvar Rascunho
+                        </button>
+                        
+                        <button type="button" class="btn btn-success" id="btn-enviar-cozinha">
+                            <i class="fas fa-utensils"></i> Enviar para Cozinha
+                        </button>
+                        
+                        <button type="submit" class="btn btn-primary" id="btn-finalizar">
+                            <i class="fas fa-check"></i> Finalizar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div class="modal-container" id="modal-produto" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Detalhes do Produto</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Conteúdo do modal -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-produto-nome">Produto</label>
+                        <input type="text" id="modal-produto-nome" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-produto-quantidade">Quantidade</label>
+                        <input type="number" id="modal-produto-quantidade" min="1" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-produto-preco">Preço Unitário</label>
+                        <input type="text" id="modal-produto-preco" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-produto-observacao">Observações</label>
+                        <textarea id="modal-produto-observacao" rows="3" placeholder="Ex: Sem cebola, bem passado, etc."></textarea>
+                    </div>
+                </div>
+                
+                <div class="opcoes-container" id="modal-produto-modificadores">
+                    <h4>Opções</h4>
+                    <!-- Opções dinâmicas aqui -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-primary" id="modal-produto-adicionar">Adicionar ao Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-container" id="modal-cliente" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Cadastro de Cliente</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário de cadastro de cliente -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-cliente-nome">Nome*</label>
+                        <input type="text" id="modal-cliente-nome" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-cliente-telefone">Telefone*</label>
+                        <input type="tel" id="modal-cliente-telefone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-cliente-email">E-mail</label>
+                        <input type="email" id="modal-cliente-email">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-cliente-cpf">CPF</label>
+                        <input type="text" id="modal-cliente-cpf">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-primary" id="modal-cliente-salvar">Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="pedidos.js"></script>
+</body>
+</html>

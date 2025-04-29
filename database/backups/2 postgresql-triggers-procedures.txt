@@ -1,0 +1,784 @@
+-- Script de criação de triggers, procedures e funções para o Sistema SaaS de Restaurante Pesqueiro
+-- Banco de dados: PostgreSQL
+-- Schema: restaurante_01
+
+-- Definir o schema como padrão para as operações subsequentes
+SET search_path TO restaurante_01;
+
+------------------------------------------
+-- FUNÇÕES UTILITÁRIAS
+------------------------------------------
+
+-- Função para registrar logs do sistema
+CREATE OR REPLACE FUNCTION fn_registrar_log_sistema(
+    p_nivel VARCHAR(20),
+    p_origem VARCHAR(100),
+    p_mensagem TEXT,
+    p_stack_trace TEXT DEFAULT NULL,
+    p_dados_adicionais JSONB DEFAULT NULL,
+    p_ip_origem VARCHAR(45) DEFAULT NULL,
+    p_usuario_id INTEGER DEFAULT NULL
+) RETURNS INTEGER AS $$
+DECLARE
+    v_log_id INTEGER;
+BEGIN
+    INSERT INTO logs_sistema (
+        nivel, 
+        origem, 
+        mensagem, 
+        stack_trace, 
+        dados_adicionais, 
+        ip_origem, 
+        usuario_id
+    ) VALUES (
+        p_nivel, 
+        p_origem, 
+        p_mensagem, 
+        p_stack_trace, 
+        p_dados_adicionais, 
+        p_ip_origem, 
+        p_usuario_id
+    ) RETURNING id INTO v_log_id;
+    
+    RETURN v_log_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para registrar logs de acesso
+CREATE OR REPLACE FUNCTION fn_registrar_log_acesso(
+    p_usuario_id INTEGER DEFAULT NULL,
+    p_email VARCHAR(100) DEFAULT NULL,
+    p_ip_origem VARCHAR(45),
+    p_user_agent TEXT DEFAULT NULL,
+    p_acao VARCHAR(50),
+    p_sucesso BOOLEAN,
+    p_detalhes TEXT DEFAULT NULL
+) RETURNS INTEGER AS $$
+DECLARE
+    v_log_id INTEGER;
+BEGIN
+    INSERT INTO logs_acesso (
+        usuario_id,
+        email,
+        ip_origem,
+        user_agent,
+        acao,
+        sucesso,
+        detalhes
+    ) VALUES (
+        p_usuario_id,
+        p_email,
+        p_ip_origem,
+        p_user_agent,
+        p_acao,
+        p_sucesso,
+        p_detalhes
+    ) RETURNING id INTO v_log_id;
+    
+    RETURN v_log_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para limpar logs antigos
+CREATE OR REPLACE FUNCTION fn_limpar_logs_antigos(dias_retencao INTEGER)
+RETURNS INTEGER AS $$
+DECLARE
+    total_excluidos INTEGER := 0;
+    excluidos INTEGER;
+BEGIN
+    -- Logs do sistema
+    DELETE FROM logs_sistema 
+    WHERE data_hora < CURRENT_DATE - dias_retencao;
+    GET DIAGNOSTICS excluidos = ROW_COUNT;
+    total_excluidos := total_excluidos + excluidos;
+    
+    -- Logs de acesso
+    DELETE FROM logs_acesso 
+    WHERE data_hora < CURRENT_DATE - dias_retencao;
+    GET DIAGNOSTICS excluidos = ROW_COUNT;
+    total_excluidos := total_excluidos + excluidos;
+    
+    -- Logs de atividade
+    DELETE FROM logs 
+    WHERE data_hora < CURRENT_DATE - dias_retencao;
+    GET DIAGNOSTICS excluidos = ROW_COUNT;
+    total_excluidos := total_excluidos + excluidos;
+    
+    RETURN total_excluidos;
+END;
+$$ LANGUAGE plpgsql;
+
+------------------------------------------
+-- TRIGGERS PARA LOGS DE AUDITORIA
+------------------------------------------
+
+-- Função para registrar alterações em tabelas importantes
+CREATE OR REPLACE FUNCTION fn_registrar_log()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO logs (
+        usuario_id,
+        acao,
+        tabela_afetada,
+        registro_afetado,
+        dados_anteriores,
+        dados_novos,
+        ip
+    ) VALUES (
+        (SELECT current_setting('app.usuario_id', true)::INTEGER),
+        CASE
+            WHEN TG_OP = 'INSERT' THEN 'INSERT'
+            WHEN TG_OP = 'UPDATE' THEN 'UPDATE'
+            WHEN TG_OP = 'DELETE' THEN 'DELETE'
+            ELSE TG_OP
+        END,
+        TG_TABLE_NAME,
+        CASE
+            WHEN TG_OP = 'INSERT' THEN NEW.id
+            WHEN TG_OP = 'UPDATE' THEN NEW.id
+            WHEN TG_OP = 'DELETE' THEN OLD.id
+            ELSE NULL
+        END,
+        CASE
+            WHEN TG_OP = 'UPDATE' OR TG_OP = 'DELETE' THEN row_to_json(OLD)
+            ELSE NULL
+        END,
+        CASE
+            WHEN TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN row_to_json(NEW)
+            ELSE NULL
+        END,
+        (SELECT current_setting('app.ip_address', true))
+    );
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers para auditoria de tabelas importantes
+CREATE TRIGGER tg_usuarios_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON usuarios
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+CREATE TRIGGER tg_produtos_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON produtos
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+CREATE TRIGGER tg_pedidos_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON pedidos
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+CREATE TRIGGER tg_pagamentos_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON pagamentos
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+CREATE TRIGGER tg_mesas_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON mesas
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+CREATE TRIGGER tg_funcionarios_auditoria
+AFTER INSERT OR UPDATE OR DELETE ON funcionarios
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_log();
+
+------------------------------------------
+-- TRIGGERS PARA ATUALIZAÇÃO DE ESTOQUE
+------------------------------------------
+
+-- Função para atualizar estoque após entrada
+CREATE OR REPLACE FUNCTION fn_atualizar_estoque_entrada()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE produtos
+    SET estoque_atual = estoque_atual + NEW.quantidade,
+        data_atualizacao = CURRENT_TIMESTAMP
+    WHERE id = NEW.produto_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para atualizar estoque após saída manual
+CREATE OR REPLACE FUNCTION fn_atualizar_estoque_saida()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE produtos
+    SET estoque_atual = estoque_atual - NEW.quantidade,
+        data_atualizacao = CURRENT_TIMESTAMP
+    WHERE id = NEW.produto_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para atualizar estoque após pedido (na criação de item de pedido)
+CREATE OR REPLACE FUNCTION fn_atualizar_estoque_pedido()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_controlado_estoque BOOLEAN;
+BEGIN
+    -- Verificar se o produto tem controle de estoque
+    SELECT controlado_estoque INTO v_controlado_estoque
+    FROM produtos
+    WHERE id = NEW.produto_id;
+    
+    -- Se for controlado, atualiza o estoque
+    IF v_controlado_estoque THEN
+        UPDATE produtos
+        SET estoque_atual = estoque_atual - NEW.quantidade,
+            data_atualizacao = CURRENT_TIMESTAMP
+        WHERE id = NEW.produto_id;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para retornar estoque quando um item de pedido é cancelado ou excluído
+CREATE OR REPLACE FUNCTION fn_retornar_estoque_pedido()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_controlado_estoque BOOLEAN;
+    v_status VARCHAR(20);
+BEGIN
+    -- Verificar se o produto tem controle de estoque
+    SELECT controlado_estoque INTO v_controlado_estoque
+    FROM produtos
+    WHERE id = OLD.produto_id;
+    
+    -- Verificar o status do pedido (para não retornar estoque de pedidos já entregues)
+    SELECT status INTO v_status
+    FROM pedidos
+    WHERE id = OLD.pedido_id;
+    
+    -- Se for controlado e o pedido não foi entregue, retorna ao estoque
+    IF v_controlado_estoque AND v_status != 'Entregue' AND v_status != 'Fechado' THEN
+        UPDATE produtos
+        SET estoque_atual = estoque_atual + OLD.quantidade,
+            data_atualizacao = CURRENT_TIMESTAMP
+        WHERE id = OLD.produto_id;
+    END IF;
+    
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar triggers para estoque
+CREATE TRIGGER tg_atualizar_estoque_entrada
+AFTER INSERT ON entradas_estoque
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_estoque_entrada();
+
+CREATE TRIGGER tg_atualizar_estoque_saida
+AFTER INSERT ON saidas_estoque
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_estoque_saida();
+
+CREATE TRIGGER tg_atualizar_estoque_pedido
+AFTER INSERT ON itens_pedido
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_estoque_pedido();
+
+CREATE TRIGGER tg_retornar_estoque_pedido
+AFTER DELETE ON itens_pedido
+FOR EACH ROW EXECUTE FUNCTION fn_retornar_estoque_pedido();
+
+------------------------------------------
+-- TRIGGERS PARA CÁLCULOS FINANCEIROS
+------------------------------------------
+
+-- Função para calcular totais do pedido (soma de itens)
+CREATE OR REPLACE FUNCTION fn_calcular_totais_pedido()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Atualizar valores do pedido quando um item é adicionado, alterado ou removido
+    UPDATE pedidos p
+    SET valor_subtotal = (
+            SELECT COALESCE(SUM(valor_total), 0)
+            FROM itens_pedido
+            WHERE pedido_id = p.id
+        ),
+        valor_total = (
+            SELECT COALESCE(SUM(valor_total), 0)
+            FROM itens_pedido
+            WHERE pedido_id = p.id
+        ) - p.valor_desconto
+    WHERE p.id = CASE
+        WHEN TG_OP = 'DELETE' THEN OLD.pedido_id
+        ELSE NEW.pedido_id
+    END;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para atualizar o valor total após alteração de desconto
+CREATE OR REPLACE FUNCTION fn_atualizar_total_apos_desconto()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Se mudou o desconto, recalcular o valor total
+    IF OLD.valor_desconto IS DISTINCT FROM NEW.valor_desconto THEN
+        NEW.valor_total = NEW.valor_subtotal - NEW.valor_desconto;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para calcular o valor total do item do pedido
+CREATE OR REPLACE FUNCTION fn_calcular_valor_item_pedido()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calcular o valor total do item (preço x quantidade)
+    NEW.valor_total = NEW.preco_unitario * NEW.quantidade;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar triggers para cálculos financeiros
+CREATE TRIGGER tg_calcular_totais_pedido
+AFTER INSERT OR UPDATE OR DELETE ON itens_pedido
+FOR EACH ROW EXECUTE FUNCTION fn_calcular_totais_pedido();
+
+CREATE TRIGGER tg_atualizar_total_apos_desconto
+BEFORE UPDATE ON pedidos
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_total_apos_desconto();
+
+CREATE TRIGGER tg_calcular_valor_item_pedido
+BEFORE INSERT OR UPDATE ON itens_pedido
+FOR EACH ROW EXECUTE FUNCTION fn_calcular_valor_item_pedido();
+
+------------------------------------------
+-- TRIGGERS PARA ATUALIZAR STATUS DA MESA
+------------------------------------------
+
+-- Função para atualizar o status da mesa quando um pedido é criado ou fechado
+CREATE OR REPLACE FUNCTION fn_atualizar_status_mesa()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Quando um pedido é criado, muda o status da mesa para Ocupada
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.mesa_id IS NOT NULL THEN
+            UPDATE mesas
+            SET status = 'Ocupada'
+            WHERE id = NEW.mesa_id;
+        END IF;
+    -- Quando um pedido é fechado, verifica se há outros pedidos ativos na mesa
+    ELSIF TG_OP = 'UPDATE' THEN
+        IF NEW.status = 'Fechado' AND OLD.status != 'Fechado' AND NEW.mesa_id IS NOT NULL THEN
+            -- Se não houver outros pedidos abertos, libera a mesa
+            IF NOT EXISTS (
+                SELECT 1 FROM pedidos
+                WHERE mesa_id = NEW.mesa_id 
+                AND status != 'Fechado' 
+                AND status != 'Cancelado'
+                AND id != NEW.id
+            ) THEN
+                UPDATE mesas
+                SET status = 'Livre'
+                WHERE id = NEW.mesa_id;
+            END IF;
+        END IF;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para atualizar o status da mesa quando uma reserva é confirmada
+CREATE OR REPLACE FUNCTION fn_atualizar_status_mesa_reserva()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Quando uma reserva é criada como Confirmada, muda o status da mesa para Reservada
+    IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' AND NEW.status = 'Confirmada' AND OLD.status != 'Confirmada') THEN
+        IF NEW.status = 'Confirmada' AND NEW.mesa_id IS NOT NULL AND NEW.data_reserva = CURRENT_DATE THEN
+            UPDATE mesas
+            SET status = 'Reservada'
+            WHERE id = NEW.mesa_id;
+        END IF;
+    -- Quando uma reserva é cancelada, verifica se há outros pedidos ativos na mesa
+    ELSIF TG_OP = 'UPDATE' AND NEW.status = 'Cancelada' AND OLD.status != 'Cancelada' THEN
+        IF NEW.mesa_id IS NOT NULL AND NEW.data_reserva = CURRENT_DATE THEN
+            -- Se não houver pedidos abertos, libera a mesa
+            IF NOT EXISTS (
+                SELECT 1 FROM pedidos
+                WHERE mesa_id = NEW.mesa_id 
+                AND status != 'Fechado' 
+                AND status != 'Cancelado'
+            ) THEN
+                UPDATE mesas
+                SET status = 'Livre'
+                WHERE id = NEW.mesa_id;
+            END IF;
+        END IF;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar triggers para status da mesa
+CREATE TRIGGER tg_atualizar_status_mesa
+AFTER INSERT OR UPDATE ON pedidos
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_status_mesa();
+
+CREATE TRIGGER tg_atualizar_status_mesa_reserva
+AFTER INSERT OR UPDATE ON reservas
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_status_mesa_reserva();
+
+------------------------------------------
+-- TRIGGERS PARA ALERTAS DE ESTOQUE BAIXO
+------------------------------------------
+
+-- Função para verificar e registrar alertas de estoque baixo
+CREATE OR REPLACE FUNCTION fn_verificar_estoque_baixo()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Se o estoque ficar abaixo do mínimo, registrar esse fato
+    IF NEW.estoque_atual <= NEW.estoque_minimo AND 
+       (OLD.estoque_atual IS NULL OR OLD.estoque_atual > OLD.estoque_minimo) THEN
+        -- Registrar no log do sistema
+        PERFORM fn_registrar_log_sistema(
+            'WARNING',
+            'Estoque',
+            'Produto ' || NEW.nome || ' (ID: ' || NEW.id || ') está com estoque baixo. Atual: ' || 
+            NEW.estoque_atual || ', Mínimo: ' || NEW.estoque_minimo,
+            NULL,
+            jsonb_build_object(
+                'produto_id', NEW.id,
+                'produto_nome', NEW.nome,
+                'estoque_atual', NEW.estoque_atual,
+                'estoque_minimo', NEW.estoque_minimo
+            ),
+            NULL,
+            NULL
+        );
+        
+        -- Também pode usar pg_notify para enviar evento ao aplicativo
+        PERFORM pg_notify(
+            'estoque_baixo',
+            json_build_object(
+                'produto_id', NEW.id,
+                'produto_nome', NEW.nome,
+                'estoque_atual', NEW.estoque_atual,
+                'estoque_minimo', NEW.estoque_minimo
+            )::text
+        );
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para alerta de estoque baixo
+CREATE TRIGGER tg_verificar_estoque_baixo
+AFTER UPDATE OF estoque_atual ON produtos
+FOR EACH ROW EXECUTE FUNCTION fn_verificar_estoque_baixo();
+
+------------------------------------------
+-- TRIGGERS PARA CAIXA
+------------------------------------------
+
+-- Função para fechar o caixa anterior ao abrir um novo
+CREATE OR REPLACE FUNCTION fn_fechar_caixa_anterior()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_caixa_anterior INTEGER;
+    v_valor_sistema DECIMAL(10, 2);
+BEGIN
+    -- Verificar se há um caixa aberto para o mesmo usuário
+    SELECT id INTO v_caixa_anterior
+    FROM caixas
+    WHERE usuario_id = NEW.usuario_id
+    AND status = 'Aberto'
+    AND id != NEW.id
+    ORDER BY data_abertura DESC
+    LIMIT 1;
+    
+    -- Se existir um caixa aberto, calculamos o valor do sistema e fechamos
+    IF v_caixa_anterior IS NOT NULL THEN
+        -- Calcular o valor do sistema (saldo de abertura + entradas - saídas)
+        SELECT COALESCE(
+            (SELECT valor_abertura FROM caixas WHERE id = v_caixa_anterior) +
+            (SELECT COALESCE(SUM(valor), 0) FROM movimentacoes_financeiras 
+             WHERE tipo = 'Entrada' AND data_movimento BETWEEN 
+                (SELECT data_abertura FROM caixas WHERE id = v_caixa_anterior) AND CURRENT_TIMESTAMP) -
+            (SELECT COALESCE(SUM(valor), 0) FROM movimentacoes_financeiras 
+             WHERE tipo = 'Saída' AND data_movimento BETWEEN 
+                (SELECT data_abertura FROM caixas WHERE id = v_caixa_anterior) AND CURRENT_TIMESTAMP),
+            0
+        ) INTO v_valor_sistema;
+        
+        -- Fechar o caixa anterior
+        UPDATE caixas
+        SET status = 'Fechado',
+            data_fechamento = CURRENT_TIMESTAMP,
+            valor_sistema = v_valor_sistema,
+            valor_fechamento = v_valor_sistema,  -- Assumindo que o fechamento está correto
+            diferenca = 0,  -- Assumindo que não há diferença
+            observacao = COALESCE(observacao, '') || ' Fechado automaticamente ao abrir novo caixa.'
+        WHERE id = v_caixa_anterior;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para fechamento automático de caixa
+CREATE TRIGGER tg_fechar_caixa_anterior
+BEFORE INSERT ON caixas
+FOR EACH ROW EXECUTE FUNCTION fn_fechar_caixa_anterior();
+
+------------------------------------------
+-- TRIGGERS PARA DATAS DE ATUALIZAÇÃO
+------------------------------------------
+
+-- Função para atualizar timestamp de atualização
+CREATE OR REPLACE FUNCTION fn_atualizar_data_atualizacao()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.data_atualizacao = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Aplicar em tabelas relevantes
+CREATE TRIGGER tg_atualizar_data_produtos
+BEFORE UPDATE ON produtos
+FOR EACH ROW EXECUTE FUNCTION fn_atualizar_data_atualizacao();
+
+------------------------------------------
+-- TRIGGERS PARA USUÁRIOS
+------------------------------------------
+
+-- Função para registrar o último acesso
+CREATE OR REPLACE FUNCTION fn_registrar_ultimo_acesso()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Ao definir o current_setting de sessão 'app.usuario_login', este trigger atualiza o último acesso
+    IF TG_OP = 'UPDATE' AND current_setting('app.usuario_login', true) = 'true' THEN
+        NEW.ultimo_acesso = CURRENT_TIMESTAMP;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para último acesso
+CREATE TRIGGER tg_registrar_ultimo_acesso
+BEFORE UPDATE ON usuarios
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_ultimo_acesso();
+
+------------------------------------------
+-- TRIGGERS PARA MOVIMENTAÇÕES FINANCEIRAS
+------------------------------------------
+
+-- Função para criar movimentação financeira a partir de pagamento
+CREATE OR REPLACE FUNCTION fn_registrar_movimentacao_pagamento()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_descricao VARCHAR(200);
+BEGIN
+    -- Obter informações do pedido para a descrição
+    SELECT 'Pagamento referente ao pedido #' || p.id || 
+           CASE WHEN p.mesa_id IS NOT NULL THEN ' (Mesa ' || (SELECT numero FROM mesas WHERE id = p.mesa_id) || ')' ELSE '' END
+    INTO v_descricao
+    FROM pedidos p
+    WHERE p.id = NEW.pedido_id;
+    
+    -- Inserir na tabela de movimentações financeiras
+    INSERT INTO movimentacoes_financeiras (
+        tipo,
+        descricao,
+        valor,
+        data_movimento,
+        forma_pagamento_id,
+        pedido_id,
+        categoria,
+        observacao,
+        usuario_id
+    ) VALUES (
+        'Entrada',
+        v_descricao,
+        NEW.valor,
+        NEW.data_pagamento,
+        NEW.forma_pagamento_id,
+        NEW.pedido_id,
+        'Venda',
+        NEW.observacao,
+        NEW.usuario_id
+    );
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para movimentação financeira
+CREATE TRIGGER tg_registrar_movimentacao_pagamento
+AFTER INSERT ON pagamentos
+FOR EACH ROW EXECUTE FUNCTION fn_registrar_movimentacao_pagamento();
+
+------------------------------------------
+-- TRIGGERS PARA STATUS DO PEDIDO
+------------------------------------------
+
+-- Função para verificar e atualizar status do pedido
+CREATE OR REPLACE FUNCTION fn_verificar_status_itens_pedido()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_todos_prontos BOOLEAN;
+    v_todos_entregues BOOLEAN;
+BEGIN
+    -- Verificar se todos os itens estão prontos
+    SELECT 
+        NOT EXISTS (
+            SELECT 1 FROM itens_pedido 
+            WHERE pedido_id = NEW.pedido_id 
+            AND status NOT IN ('Pronto', 'Entregue', 'Cancelado')
+        ),
+        NOT EXISTS (
+            SELECT 1 FROM itens_pedido 
+            WHERE pedido_id = NEW.pedido_id 
+            AND status NOT IN ('Entregue', 'Cancelado')
+        )
+    INTO v_todos_prontos, v_todos_entregues;
+    
+    -- Se todos estiverem prontos e o pedido estiver 'Em Preparo', atualizar para 'Pronto'
+    IF v_todos_prontos THEN
+        UPDATE pedidos
+        SET status = 'Pronto'
+        WHERE id = NEW.pedido_id AND status = 'Em Preparo';
+    END IF;
+    
+    -- Se todos estiverem entregues e o pedido não estiver 'Fechado', atualizar para 'Entregue'
+    IF v_todos_entregues THEN
+        UPDATE pedidos
+        SET status = 'Entregue'
+        WHERE id = NEW.pedido_id AND status NOT IN ('Fechado', 'Cancelado');
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para verificação de status
+CREATE TRIGGER tg_verificar_status_itens_pedido
+AFTER UPDATE OF status ON itens_pedido
+FOR EACH ROW EXECUTE FUNCTION fn_verificar_status_itens_pedido();
+
+------------------------------------------
+-- TRIGGERS PARA ENTRADAS DE ESTOQUE
+------------------------------------------
+
+-- Função para calcular valor total da entrada de estoque
+CREATE OR REPLACE FUNCTION fn_calcular_valor_total_entrada()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calcular o valor total da entrada (preço unitário x quantidade)
+    NEW.valor_total = NEW.preco_unitario * NEW.quantidade;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para cálculo do valor total de entrada
+CREATE TRIGGER tg_calcular_valor_total_entrada
+BEFORE INSERT OR UPDATE ON entradas_estoque
+FOR EACH ROW EXECUTE FUNCTION fn_calcular_valor_total_entrada();
+
+------------------------------------------
+-- STORED PROCEDURES - RELATÓRIOS
+------------------------------------------
+
+-- Procedimento para calcular a lucratividade por período
+CREATE OR REPLACE PROCEDURE sp_calcular_lucratividade(
+    p_data_inicio DATE,
+    p_data_fim DATE
+) 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_vendas DECIMAL(10, 2);
+    v_custo_produtos DECIMAL(10, 2);
+    v_total_despesas DECIMAL(10, 2);
+    v_lucro_bruto DECIMAL(10, 2);
+    v_lucro_liquido DECIMAL(10, 2);
+    v_margem_lucro DECIMAL(5, 2);
+BEGIN
+    -- Calcular total de vendas no período
+    SELECT COALESCE(SUM(valor_total), 0) INTO v_total_vendas
+    FROM pedidos
+    WHERE status = 'Fechado'
+    AND data_fechamento BETWEEN p_data_inicio AND p_data_fim + INTERVAL '1 day' - INTERVAL '1 second';
+    
+    -- Calcular custo dos produtos vendidos
+    SELECT COALESCE(SUM(ip.quantidade * p.preco_custo), 0) INTO v_custo_produtos
+    FROM itens_pedido ip
+    JOIN produtos p ON ip.produto_id = p.id
+    JOIN pedidos pe ON ip.pedido_id = pe.id
+    WHERE pe.status = 'Fechado'
+    AND pe.data_fechamento BETWEEN p_data_inicio AND p_data_fim + INTERVAL '1 day' - INTERVAL '1 second';
+    
+    -- Calcular total de despesas no período
+    SELECT COALESCE(SUM(valor), 0) INTO v_total_despesas
+    FROM movimentacoes_financeiras
+    WHERE tipo = 'Saída'
+    AND data_movimento BETWEEN p_data_inicio AND p_data_fim + INTERVAL '1 day' - INTERVAL '1 second';
+    
+    -- Calcular lucro bruto (vendas - custo dos produtos)
+    v_lucro_bruto := v_total_vendas - v_custo_produtos;
+    
+    -- Calcular lucro líquido (lucro bruto - despesas)
+    v_lucro_liquido := v_lucro_bruto - v_total_despesas;
+    
+    -- Calcular margem de lucro percentual
+    IF v_total_vendas > 0 THEN
+        v_margem_lucro := (v_lucro_liquido / v_total_vendas) * 100;
+    ELSE
+        v_margem_lucro := 0;
+    END IF;
+    
+    -- Exibir resultados
+    RAISE NOTICE 'Relatório de Lucratividade (% a %)', p_data_inicio, p_data_fim;
+    RAISE NOTICE 'Total de Vendas: R$ %', v_total_vendas;
+    RAISE NOTICE 'Custo dos Produtos: R$ %', v_custo_produtos;
+    RAISE NOTICE 'Lucro Bruto: R$ %', v_lucro_bruto;
+    RAISE NOTICE 'Total de Despesas: R$ %', v_total_despesas;
+    RAISE NOTICE 'Lucro Líquido: R$ %', v_lucro_liquido;
+    RAISE NOTICE 'Margem de Lucro: %', v_margem_lucro;
+END;
+$$;
+
+-- Função para gerar relatório de vendas por produto
+CREATE OR REPLACE FUNCTION fn_relatorio_vendas_por_produto(
+    p_data_inicio DATE,
+    p_data_fim DATE
+) 
+RETURNS TABLE (
+    produto_id INTEGER,
+    produto_nome VARCHAR(100),
+    quantidade_vendida DECIMAL(10, 2),
+    valor_total DECIMAL(10, 2),
+    percentual_vendas DECIMAL(5, 2)
+) 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_vendas DECIMAL(10, 2);
+BEGIN
+    -- Calcular total de vendas no período (para percentual)
+    SELECT COALESCE(SUM(valor_total), 0) INTO v_total_vendas
+    FROM pedidos
+    WHERE status = 'Fechado'
+    AND data_fechamento BETWEEN p_data_inicio AND p_data_fim + INTERVAL '1 day' - INTERVAL '1 second';
+    
+    -- Retornar dados de vendas por produto
+    RETURN QUERY
+    SELECT 
+        p.id AS produto_id,
+        p.nome AS produto_nome,
+        SUM(ip.quantidade) AS quantidade_vendida,
+        SUM(ip.valor_total) AS valor_total,
+        CASE 
+            WHEN v_total_vendas > 0 THEN (SUM(ip.valor_total) / v_total_vendas) * 100
+            ELSE 0
+        END AS percentual_vendas
+    FROM itens_pedido ip
+    JOIN produtos p ON ip.produto_id = p.id
+    JOIN pedidos pe ON ip.pedido_id = pe.id
+    WHERE pe.status

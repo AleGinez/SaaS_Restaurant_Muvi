@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro de Funcionários - Recanto Rancho do Peixe">
+    <title>Cadastro de Funcionários - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal -->
+        <aside class="sidebar" aria-label="Menu principal">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/150/80" alt="Logo Recanto Rancho do Peixe" class="logo">
+                <h2>Recanto Rancho do Peixe</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Foto do usuário" class="user-avatar">
+                <div class="user-details">
+                    <span class="user-name">Paulo Palazi</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a href="#" data-page="dashboard">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-pedidos">
+                            <i class="fas fa-utensils" aria-hidden="true"></i>
+                            <span>Pedidos</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-pedidos">
+                            <li><a href="#" data-page="pedidos">Novos Pedidos</a></li>
+                            <li><a href="#" data-page="pedidos-mesa">Pedidos de Mesa</a></li>
+                            <li><a href="#" data-page="pedidos-viagem">Pedidos para Viagem</a></li>
+                            <li><a href="#" data-page="pedidos-delivery">Pedidos de Delivery</a></li>
+                            <li><a href="#" data-page="pedidos-andamento">Pedidos em Andamento</a></li>
+                            <li><a href="#" data-page="historico-pedidos">Histórico de Pedidos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Funcionários -->
+                    <li class="menu-item has-submenu active open">
+                        <button class="submenu-toggle" aria-expanded="true" aria-controls="submenu-funcionarios">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                            <span>Funcionários</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-funcionarios">
+                            <li class="active"><a href="#" data-page="cadastro-funcionarios">Cadastro de Funcionários</a></li>
+                            <li><a href="#" data-page="cargos-permissoes">Cargos e Permissões</a></li>
+                            <li><a href="#" data-page="controle-ponto">Controle de Ponto</a></li>
+                            <li><a href="#" data-page="relatorio-horas">Relatório de Horas</a></li>
+                            <li><a href="#" data-page="comissoes-gorjetas">Comissões e Gorjetas</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Outros itens de menu omitidos para brevidade -->
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#suporte" aria-label="Suporte">
+                    <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    <span>Suporte</span>
+                </a>
+                <a href="#sair" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" aria-label="Toggle sidebar menu">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                
+                <div class="search-bar">
+                    <label for="global-search" class="sr-only">Pesquisar</label>
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="global-search" placeholder="Pesquisar funcionários...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications" aria-label="3 notificações">
+                        <i class="fas fa-bell" aria-hidden="true"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="btn-novo-funcionario">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i>
+                        <span>Novo Funcionário</span>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <section class="page-header">
+                    <div class="page-title-area">
+                        <h1>Cadastro de Funcionários</h1>
+                        <div class="breadcrumb" aria-label="breadcrumb">
+                            <a href="#">Home</a> / <a href="#">Funcionários</a> / <span>Cadastro de Funcionários</span>
+                        </div>
+                    </div>
+                    
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" id="btn-filtros">
+                            <i class="fas fa-filter" aria-hidden="true"></i>
+                            <span>Filtros</span>
+                        </button>
+                        <button class="btn btn-primary" id="btn-exportar">
+                            <i class="fas fa-file-export" aria-hidden="true"></i>
+                            <span>Exportar</span>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Formulário de Cadastro -->
+                <div class="card-container">
+                    <div class="cadastro-header">
+                        <div class="cadastro-title">
+                            <i class="fas fa-user-edit" aria-hidden="true"></i>
+                            <h2>Dados do Funcionário</h2>
+                        </div>
+                        <div class="cadastro-status">
+                            <label for="funcionario-status" class="status-label">Status:</label>
+                            <select id="funcionario-status" class="status-select">
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                                <option value="ferias">Em Férias</option>
+                                <option value="afastado">Afastado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <form id="form-cadastro-funcionario" class="form-cadastro">
+                        <!-- Tab de navegação -->
+                        <div class="tabs-container">
+                            <div class="form-tabs" role="tablist">
+                                <button type="button" id="tab-pessoal-btn" class="form-tab active" role="tab" aria-selected="true" aria-controls="tab-pessoal-content">
+                                    <i class="fas fa-user" aria-hidden="true"></i> Dados Pessoais
+                                </button>
+                                <button type="button" id="tab-acesso-btn" class="form-tab" role="tab" aria-selected="false" aria-controls="tab-acesso-content">
+                                    <i class="fas fa-lock" aria-hidden="true"></i> Dados de Acesso
+                                </button>
+                                <button type="button" id="tab-funcional-btn" class="form-tab" role="tab" aria-selected="false" aria-controls="tab-funcional-content">
+                                    <i class="fas fa-id-badge" aria-hidden="true"></i> Dados Funcionais
+                                </button>
+                                <button type="button" id="tab-permissoes-btn" class="form-tab" role="tab" aria-selected="false" aria-controls="tab-permissoes-content">
+                                    <i class="fas fa-shield-alt" aria-hidden="true"></i> Permissões
+                                </button>
+                            </div>
+                            
+                            <!-- Conteúdo das Tabs -->
+                            <div class="tab-content-container">
+                                <!-- Tab Dados Pessoais -->
+                                <div id="tab-pessoal-content" class="tab-content active" role="tabpanel" aria-labelledby="tab-pessoal-btn">
+                                    <div class="form-section">
+                                        <div class="form-section-row">
+                                            <div class="form-photo-container">
+                                                <div class="form-photo">
+                                                    <img src="/api/placeholder/150/150" alt="Foto do Funcionário" id="funcionario-foto-preview">
+                                                    <div class="photo-overlay">
+                                                        <i class="fas fa-camera" aria-hidden="true"></i>
+                                                    </div>
+                                                </div>
+                                                <input type="file" id="funcionario-foto" accept="image/*" class="hidden">
+                                                <label for="funcionario-foto" class="btn-photo">Alterar Foto</label>
+                                            </div>
+                                            
+                                            <div class="form-fields">
+                                                <div class="form-row">
+                                                    <div class="form-group required">
+                                                        <label for="funcionario-nome">Nome Completo</label>
+                                                        <input type="text" id="funcionario-nome" name="nome" required placeholder="Nome completo do funcionário">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label for="funcionario-cpf">CPF</label>
+                                                        <input type="text" id="funcionario-cpf" name="cpf" placeholder="000.000.000-00">
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="funcionario-rg">RG</label>
+                                                        <input type="text" id="funcionario-rg" name="rg" placeholder="00.000.000-0">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label for="funcionario-nascimento">Data de Nascimento</label>
+                                                        <input type="date" id="funcionario-nascimento" name="nascimento">
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="funcionario-genero">Gênero</label>
+                                                        <select id="funcionario-genero" name="genero">
+                                                            <option value="">Selecione</option>
+                                                            <option value="masculino">Masculino</option>
+                                                            <option value="feminino">Feminino</option>
+                                                            <option value="outro">Outro</option>
+                                                            <option value="nao-informar">Prefiro não informar</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Contato</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-email">E-mail</label>
+                                                <input type="email" id="funcionario-email" name="email" required placeholder="email@exemplo.com">
+                                            </div>
+                                            
+                                            <div class="form-group required">
+                                                <label for="funcionario-telefone">Telefone Celular</label>
+                                                <input type="tel" id="funcionario-telefone" name="telefone" required placeholder="(00) 00000-0000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-telefone2">Telefone Adicional</label>
+                                                <input type="tel" id="funcionario-telefone2" name="telefone2" placeholder="(00) 0000-0000">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-emergencia">Contato de Emergência</label>
+                                                <input type="tel" id="funcionario-emergencia" name="emergencia" placeholder="(00) 00000-0000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Endereço</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-cep">CEP</label>
+                                                <div class="input-with-icon">
+                                                    <input type="text" id="funcionario-cep" name="cep" placeholder="00000-000">
+                                                    <button type="button" class="icon-button" id="btn-buscar-cep" aria-label="Buscar CEP">
+                                                        <i class="fas fa-search" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group form-group-lg">
+                                                <label for="funcionario-endereco">Endereço</label>
+                                                <input type="text" id="funcionario-endereco" name="endereco" placeholder="Rua, Avenida, etc">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-numero">Número</label>
+                                                <input type="text" id="funcionario-numero" name="numero" placeholder="Nº">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-complemento">Complemento</label>
+                                                <input type="text" id="funcionario-complemento" name="complemento" placeholder="Apto, Bloco, etc">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-bairro">Bairro</label>
+                                                <input type="text" id="funcionario-bairro" name="bairro" placeholder="Bairro">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-cidade">Cidade</label>
+                                                <input type="text" id="funcionario-cidade" name="cidade" placeholder="Cidade">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-estado">Estado</label>
+                                                <select id="funcionario-estado" name="estado">
+                                                    <option value="">Selecione</option>
+                                                    <option value="AC">Acre</option>
+                                                    <option value="AL">Alagoas</option>
+                                                    <option value="AP">Amapá</option>
+                                                    <option value="AM">Amazonas</option>
+                                                    <option value="BA">Bahia</option>
+                                                    <option value="CE">Ceará</option>
+                                                    <option value="DF">Distrito Federal</option>
+                                                    <option value="ES">Espírito Santo</option>
+                                                    <option value="GO">Goiás</option>
+                                                    <option value="MA">Maranhão</option>
+                                                    <option value="MT">Mato Grosso</option>
+                                                    <option value="MS">Mato Grosso do Sul</option>
+                                                    <option value="MG">Minas Gerais</option>
+                                                    <option value="PA">Pará</option>
+                                                    <option value="PB">Paraíba</option>
+                                                    <option value="PR">Paraná</option>
+                                                    <option value="PE">Pernambuco</option>
+                                                    <option value="PI">Piauí</option>
+                                                    <option value="RJ">Rio de Janeiro</option>
+                                                    <option value="RN">Rio Grande do Norte</option>
+                                                    <option value="RS">Rio Grande do Sul</option>
+                                                    <option value="RO">Rondônia</option>
+                                                    <option value="RR">Roraima</option>
+                                                    <option value="SC">Santa Catarina</option>
+                                                    <option value="SP">São Paulo</option>
+                                                    <option value="SE">Sergipe</option>
+                                                    <option value="TO">Tocantins</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tab Dados de Acesso -->
+                                <div id="tab-acesso-content" class="tab-content" role="tabpanel" aria-labelledby="tab-acesso-btn" hidden>
+                                    <div class="form-section">
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-usuario">Nome de Usuário</label>
+                                                <input type="text" id="funcionario-usuario" name="usuario" required placeholder="Nome para login (sem espaços)">
+                                                <div class="form-help">Mínimo de 5 caracteres, apenas letras e números.</div>
+                                            </div>
+                                            
+                                            <div class="form-group required">
+                                                <label for="funcionario-email-acesso">E-mail de Acesso</label>
+                                                <input type="email" id="funcionario-email-acesso" name="email_acesso" required placeholder="Email para acesso ao sistema">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-senha">Senha</label>
+                                                <div class="input-with-icon">
+                                                    <input type="password" id="funcionario-senha" name="senha" required>
+                                                    <button type="button" class="icon-button" id="btn-toggle-senha" aria-label="Mostrar/Ocultar Senha">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="form-help">Mínimo de 8 caracteres, incluindo letras maiúsculas, minúsculas e números.</div>
+                                            </div>
+                                            
+                                            <div class="form-group required">
+                                                <label for="funcionario-confirmar-senha">Confirmar Senha</label>
+                                                <div class="input-with-icon">
+                                                    <input type="password" id="funcionario-confirmar-senha" name="confirmar_senha" required>
+                                                    <button type="button" class="icon-button" id="btn-toggle-confirmar-senha" aria-label="Mostrar/Ocultar Senha">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Segurança</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-reset-senha">Redefinir senha no próximo login?</label>
+                                                <div class="toggle-switch">
+                                                    <input type="checkbox" id="funcionario-reset-senha" name="reset_senha">
+                                                    <label for="funcionario-reset-senha" class="switch-label"></label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-autenticacao">Autenticação em duas etapas</label>
+                                                <div class="toggle-switch">
+                                                    <input type="checkbox" id="funcionario-autenticacao" name="autenticacao_duas_etapas">
+                                                    <label for="funcionario-autenticacao" class="switch-label"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-outline" id="btn-gerar-senha">
+                                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                                    <span>Gerar Senha Aleatória</span>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-outline" id="btn-enviar-credenciais">
+                                                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                                                    <span>Enviar Credenciais por Email</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tab Dados Funcionais -->
+                                <div id="tab-funcional-content" class="tab-content" role="tabpanel" aria-labelledby="tab-funcional-btn" hidden>
+                                    <div class="form-section">
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-cargo">Cargo</label>
+                                                <select id="funcionario-cargo" name="cargo" required>
+                                                    <option value="">Selecione um cargo</option>
+                                                    <option value="gerente">Gerente</option>
+                                                    <option value="garcom">Garçom</option>
+                                                    <option value="cozinheiro">Cozinheiro</option>
+                                                    <option value="chef">Chef</option>
+                                                    <option value="auxiliar_cozinha">Auxiliar de Cozinha</option>
+                                                    <option value="caixa">Caixa</option>
+                                                    <option value="recepcionista">Recepcionista</option>
+                                                    <option value="atendente">Atendente</option>
+                                                    <option value="limpeza">Serviços Gerais</option>
+                                                    <option value="entregador">Entregador</option>
+                                                    <option value="barman">Barman/Barwoman</option>
+                                                    <option value="hostess">Hostess</option>
+                                                    <option value="seguranca">Segurança</option>
+                                                    <option value="admin">Administrador</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group required">
+                                                <label for="funcionario-departamento">Departamento</label>
+                                                <select id="funcionario-departamento" name="departamento" required>
+                                                    <option value="">Selecione um departamento</option>
+                                                    <option value="administracao">Administração</option>
+                                                    <option value="cozinha">Cozinha</option>
+                                                    <option value="salao">Salão</option>
+                                                    <option value="recepcao">Recepção</option>
+                                                    <option value="bar">Bar</option>
+                                                    <option value="delivery">Delivery</option>
+                                                    <option value="limpeza">Limpeza</option>
+                                                    <option value="seguranca">Segurança</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-data-admissao">Data de Admissão</label>
+                                                <input type="date" id="funcionario-data-admissao" name="data_admissao" required>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-data-demissao">Data de Demissão</label>
+                                                <input type="date" id="funcionario-data-demissao" name="data_demissao">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Dados Contratuais</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-tipo-contrato">Tipo de Contrato</label>
+                                                <select id="funcionario-tipo-contrato" name="tipo_contrato">
+                                                    <option value="clt">CLT</option>
+                                                    <option value="pj">Pessoa Jurídica</option>
+                                                    <option value="autonomo">Autônomo</option>
+                                                    <option value="estagio">Estágio</option>
+                                                    <option value="temporario">Temporário</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-jornada">Jornada de Trabalho</label>
+                                                <select id="funcionario-jornada" name="jornada">
+                                                    <option value="integral">Integral (8h)</option>
+                                                    <option value="meio_periodo">Meio Período (4h)</option>
+                                                    <option value="escala">Escala 6x1</option>
+                                                    <option value="escala_12x36">Escala 12x36</option>
+                                                    <option value="intermitente">Intermitente</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-salario">Salário Base (R$)</label>
+                                                <input type="text" id="funcionario-salario" name="salario" placeholder="0,00">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-comissao">Comissão (%)</label>
+                                                <input type="text" id="funcionario-comissao" name="comissao" placeholder="0">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-vale-transporte">Vale Transporte (R$)</label>
+                                                <input type="text" id="funcionario-vale-transporte" name="vale_transporte" placeholder="0,00">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Dados Bancários</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-banco">Banco</label>
+                                                <input type="text" id="funcionario-banco" name="banco" placeholder="Nome do Banco">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-agencia">Agência</label>
+                                                <input type="text" id="funcionario-agencia" name="agencia" placeholder="0000">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-conta">Conta</label>
+                                                <input type="text" id="funcionario-conta" name="conta" placeholder="00000-0">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="funcionario-tipo-conta">Tipo de Conta</label>
+                                                <select id="funcionario-tipo-conta" name="tipo_conta">
+                                                    <option value="corrente">Corrente</option>
+                                                    <option value="poupanca">Poupança</option>
+                                                    <option value="salario">Salário</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="funcionario-pix">Chave PIX</label>
+                                                <input type="text" id="funcionario-pix" name="pix" placeholder="CPF, Email, Telefone ou Chave aleatória">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tab Permissões -->
+                                <div id="tab-permissoes-content" class="tab-content" role="tabpanel" aria-labelledby="tab-permissoes-btn" hidden>
+                                    <div class="form-section">
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="funcionario-perfil">Perfil de Acesso</label>
+                                                <select id="funcionario-perfil" name="perfil" required>
+                                                    <option value="">Selecione um perfil</option>
+                                                    <option value="admin">Administrador</option>
+                                                    <option value="gerente">Gerente</option>
+                                                    <option value="supervisor">Supervisor</option>
+                                                    <option value="garcom">Garçom</option>
+                                                    <option value="cozinha">Cozinha</option>
+                                                    <option value="caixa">Caixa</option>
+                                                    <option value="entregador">Entregador</option>
+                                                    <option value="visualizacao">Apenas Visualização</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Permissões por Módulo</span>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-utensils" aria-hidden="true"></i>
+                                                    <h3>Pedidos</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="pedidos">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-visualizar" name="permissoes[]" value="pedidos_visualizar">
+                                                    <label for="perm-pedidos-visualizar">Visualizar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-criar" name="permissoes[]" value="pedidos_criar">
+                                                    <label for="perm-pedidos-criar">Criar Novos Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-editar" name="permissoes[]" value="pedidos_editar">
+                                                    <label for="perm-pedidos-editar">Editar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-cancelar" name="permissoes[]" value="pedidos_cancelar">
+                                                    <label for="perm-pedidos-cancelar">Cancelar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-desconto" name="permissoes[]" value="pedidos_desconto">
+                                                    <label for="perm-pedidos-desconto">Aplicar Descontos</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-fire" aria-hidden="true"></i>
+                                                    <h3>Cozinha</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="cozinha">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-cozinha-visualizar" name="permissoes[]" value="cozinha_visualizar">
+                                                    <label for="perm-cozinha-visualizar">Visualizar Fila da Cozinha</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-cozinha-preparar" name="permissoes[]" value="cozinha_preparar">
+                                                    <label for="perm-cozinha-preparar">Iniciar Preparação</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-cozinha-concluir" name="permissoes[]" value="cozinha_concluir">
+                                                    <label for="perm-cozinha-concluir">Marcar como Concluído</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-cozinha-prioridade" name="permissoes[]" value="cozinha_prioridade">
+                                                    <label for="perm-cozinha-prioridade">Alterar Prioridade</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-cash-register" aria-hidden="true"></i>
+                                                    <h3>Financeiro</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="financeiro">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-visualizar" name="permissoes[]" value="financeiro_visualizar">
+                                                    <label for="perm-financeiro-visualizar">Visualizar Financeiro</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-pagamentos" name="permissoes[]" value="financeiro_pagamentos">
+                                                    <label for="perm-financeiro-pagamentos">Receber Pagamentos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-fechamento" name="permissoes[]" value="financeiro_fechamento">
+                                                    <label for="perm-financeiro-fechamento">Fechamento de Caixa</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-relatorios" name="permissoes[]" value="financeiro_relatorios">
+                                                    <label for="perm-financeiro-relatorios">Relatórios Financeiros</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-users" aria-hidden="true"></i>
+                                                    <h3>Funcionários</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="funcionarios">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-funcionarios-visualizar" name="permissoes[]" value="funcionarios_visualizar">
+                                                    <label for="perm-funcionarios-visualizar">Visualizar Funcionários</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-funcionarios-criar" name="permissoes[]" value="funcionarios_criar">
+                                                    <label for="perm-funcionarios-criar">Cadastrar Funcionários</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-funcionarios-editar" name="permissoes[]" value="funcionarios_editar">
+                                                    <label for="perm-funcionarios-editar">Editar Funcionários</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-funcionarios-inativar" name="permissoes[]" value="funcionarios_inativar">
+                                                    <label for="perm-funcionarios-inativar">Inativar Funcionários</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-cog" aria-hidden="true"></i>
+                                                    <h3>Configurações</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="configuracoes">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-visualizar" name="permissoes[]" value="config_visualizar">
+                                                    <label for="perm-config-visualizar">Visualizar Configurações</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-editar" name="permissoes[]" value="config_editar">
+                                                    <label for="perm-config-editar">Editar Configurações</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-backup" name="permissoes[]" value="config_backup">
+                                                    <label for="perm-config-backup">Gerenciar Backups</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-observation">
+                            <div class="form-group">
+                                <label for="funcionario-observacoes">Observações</label>
+                                <textarea id="funcionario-observacoes" name="observacoes" rows="3" placeholder="Observações adicionais sobre o funcionário..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="form-actions-left">
+                                <button type="button" class="btn btn-danger" id="btn-excluir-funcionario">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                    <span>Excluir</span>
+                                </button>
+                            </div>
+                            
+                            <div class="form-actions-right">
+                                <button type="button" class="btn btn-secondary" id="btn-cancelar">
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                    <span>Cancelar</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btn-salvar">
+                                    <i class="fas fa-save" aria-hidden="true"></i>
+                                    <span>Salvar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Listagem de Funcionários (inicialmente oculta, e mostrada após salvar ou cancelar) -->
+                <div class="listagem-container hidden" id="listagem-funcionarios">
+                    <div class="listagem-header">
+                        <div class="listagem-filtros">
+                            <div class="filtro-item">
+                                <label for="filtro-status">Status:</label>
+                                <select id="filtro-status">
+                                    <option value="todos">Todos</option>
+                                    <option value="ativo">Ativos</option>
+                                    <option value="inativo">Inativos</option>
+                                    <option value="ferias">Em Férias</option>
+                                    <option value="afastado">Afastados</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filtro-item">
+                                <label for="filtro-cargo">Cargo:</label>
+                                <select id="filtro-cargo">
+                                    <option value="todos">Todos</option>
+                                    <option value="gerente">Gerente</option>
+                                    <option value="garcom">Garçom</option>
+                                    <option value="cozinheiro">Cozinheiro</option>
+                                    <option value="auxiliar_cozinha">Auxiliar de Cozinha</option>
+                                    <option value="caixa">Caixa</option>
+                                    <option value="entregador">Entregador</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filtro-item">
+                                <label for="filtro-departamento">Departamento:</label>
+                                <select id="filtro-departamento">
+                                    <option value="todos">Todos</option>
+                                    <option value="administracao">Administração</option>
+                                    <option value="cozinha">Cozinha</option>
+                                    <option value="salao">Salão</option>
+                                    <option value="bar">Bar</option>
+                                    <option value="delivery">Delivery</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="listagem-acoes">
+                            <button class="btn btn-outline" id="btn-limpar-filtros">
+                                <i class="fas fa-sync" aria-hidden="true"></i>
+                                <span>Limpar Filtros</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table" id="tabela-funcionarios">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Cargo</th>
+                                    <th>Departamento</th>
+                                    <th>Contato</th>
+                                    <th>Data Admissão</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">João da Silva</span>
+                                                <span class="user-role">Garçom</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Garçom</td>
+                                    <td>Salão</td>
+                                    <td>(11) 98765-4321</td>
+                                    <td>01/03/2023</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Maria Oliveira</span>
+                                                <span class="user-role">Cozinheira</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Cozinheira</td>
+                                    <td>Cozinha</td>
+                                    <td>(11) 98765-1234</td>
+                                    <td>15/05/2022</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Pedro Santos</span>
+                                                <span class="user-role">Gerente</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Gerente</td>
+                                    <td>Administração</td>
+                                    <td>(11) 99876-5432</td>
+                                    <td>10/01/2021</td>
+                                    <td><span class="status-badge vacation">Férias</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Ana Souza</span>
+                                                <span class="user-role">Caixa</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Caixa</td>
+                                    <td>Administração</td>
+                                    <td>(11) 97654-3210</td>
+                                    <td>05/08/2022</td>
+                                    <td><span class="status-badge inactive">Inativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-footer">
+                        <div class="table-info">Mostrando 1-4 de 4 funcionários</div>
+                        <div class="table-pagination">
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <span class="pagination-current">1</span>
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Confirmação para Deletar -->
+    <div class="modal-container" id="modal-confirmar-deletar" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirmar Exclusão</h3>
+                <button class="modal-close" aria-label="Fechar modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este funcionário?</p>
+                <p class="warning-text">Esta ação não pode ser desfeita.</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-danger" id="btn-confirmar-excluir">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área para notificações do sistema -->
+    <div class="notifications-container" aria-live="polite"></div>
+
+    <!-- JavaScript (será adicionado posteriormente) -->
+    <script src="cadastro.js"></script>
+</body>
+</html>

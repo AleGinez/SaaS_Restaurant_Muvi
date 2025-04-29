@@ -1,0 +1,909 @@
+/* ==========================================================================
+   RECANTO RANCHO DO PEIXE - CADASTRO DE FUNCIONÁRIOS
+   CSS para a interface de cadastro de funcionários e usuários do sistema
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   VARIÁVEIS ESPECÍFICAS PARA CADASTRO
+   -------------------------------------------------------------------------- */
+:root {
+    /* Cores específicas para o módulo de cadastro */
+    --cadastro-color: #5c6bc0;
+    --cadastro-dark: #3949ab;
+    --cadastro-light: #8e99f3;
+    
+    /* Cores de status de funcionários */
+    --status-active: var(--success-color, #4caf50);
+    --status-inactive: var(--text-muted, #9e9e9e);
+    --status-vacation: var(--warning-color, #ff9800);
+    --status-leave: var(--info-color, #2196f3);
+    
+    /* Cores de campos obrigatórios */
+    --required-color: #f44336;
+    --required-light: rgba(244, 67, 54, 0.1);
+    
+    /* Espaçamentos específicos */
+    --tab-height: 50px;
+    --photo-size: 150px;
+}
+
+/* --------------------------------------------------------------------------
+   CONTAINERS E LAYOUT
+   -------------------------------------------------------------------------- */
+.card-container {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-xl);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast);
+}
+
+.card-container:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.cadastro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-light);
+}
+
+.cadastro-title {
+    display: flex;
+    align-items: center;
+}
+
+.cadastro-title i {
+    font-size: 1.5rem;
+    color: var(--cadastro-color);
+    margin-right: var(--spacing-md);
+}
+
+.cadastro-title h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.cadastro-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: var(--spacing-sm);
+}
+
+.status-select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    background-color: var(--bg-white);
+    font-weight: 500;
+}
+
+.form-cadastro {
+    padding: var(--spacing-lg);
+}
+
+/* --------------------------------------------------------------------------
+   COMPONENTES COMUNS DO FORMULÁRIO
+   -------------------------------------------------------------------------- */
+.form-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-section-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-group.form-group-lg {
+    flex: 2;
+    min-width: 300px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group.required label::after {
+    content: '*';
+    color: var(--required-color);
+    margin-left: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    background-color: var(--bg-white);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--cadastro-color);
+    box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.2);
+    outline: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
+}
+
+.form-divider {
+    position: relative;
+    margin: var(--spacing-lg) 0;
+    text-align: center;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+.form-divider span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--bg-white);
+    padding: 0 var(--spacing-md);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon input {
+    padding-right: 40px;
+}
+
+.icon-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    color: var(--text-secondary);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.icon-button:hover {
+    background-color: rgba(92, 107, 192, 0.1);
+    color: var(--cadastro-color);
+}
+
+/* --------------------------------------------------------------------------
+   COMPONENTE DE UPLOAD DE FOTO
+   -------------------------------------------------------------------------- */
+.form-photo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+}
+
+.form-photo {
+    width: var(--photo-size);
+    height: var(--photo-size);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--cadastro-light);
+    position: relative;
+    cursor: pointer;
+}
+
+.form-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter var(--transition-fast);
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.photo-overlay i {
+    font-size: 2rem;
+    color: white;
+}
+
+.form-photo:hover img {
+    filter: blur(2px);
+}
+
+.form-photo:hover .photo-overlay {
+    opacity: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.btn-photo {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--cadastro-light);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    text-align: center;
+}
+
+.btn-photo:hover {
+    background-color: var(--cadastro-color);
+}
+
+.form-fields {
+    flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   TOGGLE SWITCH
+   -------------------------------------------------------------------------- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.switch-label:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .switch-label {
+    background-color: var(--cadastro-color);
+}
+
+input:focus + .switch-label {
+    box-shadow: 0 0 1px var(--cadastro-color);
+}
+
+input:checked + .switch-label:before {
+    transform: translateX(26px);
+}
+
+/* --------------------------------------------------------------------------
+   TABS DE FORMULÁRIO
+   -------------------------------------------------------------------------- */
+.tabs-container {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+    position: relative;
+}
+
+.form-tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.form-tab i {
+    font-size: 1.1rem;
+}
+
+.form-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: transparent;
+    transition: background-color var(--transition-fast);
+}
+
+.form-tab:hover {
+    color: var(--cadastro-color);
+}
+
+.form-tab.active {
+    color: var(--cadastro-color);
+}
+
+.form-tab.active::after {
+    background-color: var(--cadastro-color);
+}
+
+.tab-content-container {
+    position: relative;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   PERMISSÕES
+   -------------------------------------------------------------------------- */
+.permission-group {
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.permission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-light);
+    padding: var(--spacing-md);
+}
+
+.permission-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.permission-title i {
+    color: var(--cadastro-color);
+    font-size: 1.1rem;
+}
+
+.permission-title h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.permission-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.btn-select-all {
+    background: none;
+    border: none;
+    color: var(--cadastro-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.btn-select-all:hover {
+    background-color: rgba(92, 107, 192, 0.1);
+}
+
+.permission-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.permission-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.permission-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.permission-item label {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   AÇÕES DO FORMULÁRIO
+   -------------------------------------------------------------------------- */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.form-actions-left, .form-actions-right {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--cadastro-color);
+    color: var(--cadastro-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-outline:hover {
+    background-color: rgba(92, 107, 192, 0.1);
+}
+
+.btn-outline i {
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   LISTAGEM DE FUNCIONÁRIOS
+   -------------------------------------------------------------------------- */
+.listagem-container {
+    margin-top: var(--spacing-lg);
+}
+
+.listagem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.listagem-filtros {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.filtro-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.filtro-item label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.filtro-item select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-white);
+}
+
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.user-role {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.status-badge.active {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--status-active);
+}
+
+.status-badge.inactive {
+    background-color: rgba(158, 158, 158, 0.1);
+    color: var(--status-inactive);
+}
+
+.status-badge.vacation {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: var(--status-vacation);
+}
+
+.status-badge.leave {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: var(--status-leave);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.action-btn:hover {
+    background-color: rgba(92, 107, 192, 0.1);
+    color: var(--cadastro-color);
+}
+
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-light);
+}
+
+.table-info {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.table-pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.pagination-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not([disabled]) {
+    background-color: rgba(92, 107, 192, 0.1);
+    color: var(--cadastro-color);
+    border-color: var(--cadastro-color);
+}
+
+.pagination-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-current {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   MODAL ESPECÍFICO
+   -------------------------------------------------------------------------- */
+.warning-text {
+    color: var(--required-color);
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVIDADE
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+    .form-section-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .form-photo-container {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .permission-items {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .cadastro-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+    
+    .form-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .form-tab {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .permission-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
+    .permission-items {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .form-actions-left {
+        order: 2;
+    }
+    
+    .form-actions-right {
+        order: 1;
+        justify-content: flex-end;
+    }
+    
+    .listagem-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .table-footer {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 576px) {
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
+    
+    .filtro-item {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .filtro-item select {
+        flex: 1;
+    }
+    
+    .form-tabs {
+        overflow-x: auto;
+    }
+    
+    .form-tab {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .form-tab i {
+        margin-right: 0;
+    }
+    
+    .form-tab span {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   PRINT STYLES
+   -------------------------------------------------------------------------- */
+@media print {
+    .sidebar,
+    .top-header,
+    .form-actions,
+    .btn-photo,
+    .icon-button {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 0;
+    }
+    
+    .card-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .form-tab:not(.active) {
+        display: none;
+    }
+    
+    input, 
+    select, 
+    textarea {
+        border: 1px solid #ccc !important;
+    }
+    
+    .form-photo {
+        border: 1px solid #ccc;
+    }
+    
+    .photo-overlay {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   ACESSIBILIDADE
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+:focus-visible {
+    outline: 2px solid var(--cadastro-color);
+    outline-offset: 2px;
+}
+
+/* Maior contraste para textos em dark mode */
+@media (prefers-color-scheme: dark) {
+    .form-group label,
+    .permission-item label,
+    .filtro-item label {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .status-badge.active {
+        background-color: rgba(76, 175, 80, 0.2);
+    }
+    
+    .status-badge.inactive {
+        background-color: rgba(158, 158, 158, 0.2);
+    }
+    
+    .status-badge.vacation {
+        background-color: rgba(255, 152, 0, 0.2);
+    }
+    
+    .status-badge.leave {
+        background-color: rgba(33, 150, 243, 0.2);
+    }
+}

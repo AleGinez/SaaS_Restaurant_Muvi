@@ -1,0 +1,499 @@
+/* Estilos para a Tela de Cozinha */
+.cozinha-body {
+    background-color: #f8f9fa;
+    overflow: hidden;
+}
+
+.cozinha-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header da Cozinha */
+.cozinha-header {
+    background-color: var(--primary-dark);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cozinha-logo {
+    display: flex;
+    align-items: center;
+}
+
+.cozinha-logo img {
+    margin-right: 15px;
+}
+
+.cozinha-logo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.cozinha-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cozinha-time {
+    background-color: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: var(--radius-sm);
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Conteúdo Principal */
+.cozinha-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tabs de Filtro */
+.cozinha-tabs {
+    display: flex;
+    margin-bottom: 15px;
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.cozinha-tab {
+    padding: 15px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    flex: 1;
+    text-align: center;
+}
+
+.cozinha-tab:hover {
+    background-color: rgba(30, 136, 229, 0.1);
+}
+
+.cozinha-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Controles e Filtros */
+.cozinha-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+
+.cozinha-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cozinha-filter label {
+    font-weight: 500;
+}
+
+.cozinha-filter select {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.cozinha-view {
+    display: flex;
+    gap: 5px;
+}
+
+.view-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.view-btn:hover {
+    background-color: var(--primary-light);
+    color: white;
+}
+
+.view-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Grid de Pedidos */
+.pedidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+    padding-bottom: 20px;
+}
+
+/* Cartão de Pedido */
+.pedido-card {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.pedido-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Cores de status */
+.pedido-card.pendente {
+    border-left: 5px solid var(--warning-color);
+}
+
+.pedido-card.em-preparo {
+    border-left: 5px solid var(--info-color);
+}
+
+.pedido-card.pronto {
+    border-left: 5px solid var(--success-color);
+}
+
+.pedido-card.entregue {
+    border-left: 5px solid #6c757d;
+    opacity: 0.8;
+}
+
+/* Cabeçalho do Pedido */
+.pedido-header {
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+}
+
+.pedido-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pedido-numero {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.pedido-mesa {
+    background-color: var(--primary-light);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.pedido-tempo {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.pedido-status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.pedido-status.pendente {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: var(--warning-color);
+}
+
+.pedido-status.em-preparo {
+    background-color: rgba(33, 150, 243, 0.2);
+    color: var(--info-color);
+}
+
+.pedido-status.pronto {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--success-color);
+}
+
+.pedido-status.entregue {
+    background-color: rgba(108, 117, 125, 0.2);
+    color: #6c757d;
+}
+
+/* Corpo do Pedido */
+.pedido-body {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.pedido-itens {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pedido-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #e5e5e5;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pedido-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.item-qty {
+    font-weight: 600;
+    margin-right: 8px;
+    color: var(--primary-color);
+    width: 30px;
+}
+
+.item-nome {
+    flex: 1;
+    font-weight: 500;
+}
+
+.item-obs {
+    width: 100%;
+    padding-left: 30px;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Rodapé do Pedido */
+.pedido-footer {
+    padding: 12px 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+}
+
+.pedido-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-status {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: var(--transition);
+}
+
+.btn-iniciar {
+    background-color: var(--warning-color);
+}
+
+.btn-iniciar:hover {
+    background-color: #f57c00;
+}
+
+.btn-concluir {
+    background-color: var(--info-color);
+}
+
+.btn-concluir:hover {
+    background-color: #1976d2;
+}
+
+.btn-entregar {
+    background-color: var(--success-color);
+}
+
+.btn-entregar:hover {
+    background-color: #388e3c;
+}
+
+.btn-status.disabled {
+    background-color: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-status.disabled:hover {
+    background-color: #e0e0e0;
+}
+
+/* Barra de Estatísticas */
+.cozinha-footer {
+    background-color: var(--primary-dark);
+    color: white;
+    padding: 10px 20px;
+}
+
+.estatisticas {
+    display: flex;
+    justify-content: space-around;
+}
+
+.estat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.estat-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.estat-valor {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .pedidos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cozinha-tabs {
+        overflow-x: auto;
+    }
+    
+    .cozinha-tab {
+        white-space: nowrap;
+        flex: none;
+        padding: 15px;
+    }
+    
+    .estatisticas {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .cozinha-actions .btn span {
+        display: none;
+    }
+}
+
+/* Modo de Lista */
+.pedidos-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.list-view .pedido-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.list-view .pedido-header {
+    width: 250px;
+    border-bottom: none;
+    border-right: 1px solid var(--border-color);
+}
+
+.list-view .pedido-body {
+    flex: 1;
+    padding: 10px 15px;
+    min-width: 300px;
+}
+
+.list-view .pedido-footer {
+    border-top: none;
+    border-left: 1px solid var(--border-color);
+    padding: 10px;
+}
+
+/* Toques e interações para tela touch */
+.btn-status:active {
+    transform: scale(0.95);
+}
+
+.pedido-card:active {
+    transform: scale(0.98);
+}
+
+/* Animações */
+@keyframes highlight {
+    0% { background-color: rgba(76, 175, 80, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.highlight-success {
+    animation: highlight 2s ease;
+}
+
+/* Classes para notificações */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification-error {
+    background-color: var(--error-color);
+}
+
+.notification-info {
+    background-color: var(--info-color);
+}

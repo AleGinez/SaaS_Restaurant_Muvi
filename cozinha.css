@@ -1,0 +1,1745 @@
+/* ==========================================================================
+   RECANTO RANCHO DO PEIXE - KITCHEN MODULE CSS
+   Tablet-optimized kitchen panel with touch-friendly interface
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CUSTOM VARIABLES
+   -------------------------------------------------------------------------- */
+:root {
+    /* Kitchen-specific colors */
+    --kitchen-primary: var(--cozinha-color, #0104d8);
+    --kitchen-dark: var(--cozinha-dark, #0030db);
+    --kitchen-light: var(--cozinha-light, #ff9e40);
+    
+    /* Status colors */
+    --status-pendente: var(--warning-color, #ff9800);
+    --status-pendente-bg: rgba(255, 152, 0, 0.15);
+    --status-preparo: var(--info-color, #2196f3);
+    --status-preparo-bg: rgba(33, 150, 243, 0.15);
+    --status-pronto: var(--success-color, #4caf50);
+    --status-pronto-bg: rgba(76, 175, 80, 0.15);
+    --status-entregue: var(--text-muted, #9e9e9e);
+    --status-entregue-bg: rgba(158, 158, 158, 0.15);
+    
+    /* Priority colors */
+    --priority-alta: #f44336;
+    --priority-normal: #2196f3;
+    --priority-baixa: #8bc34a;
+    
+    /* Timing indicators */
+    --time-normal: var(--text-secondary, #757575);
+    --time-warning: var(--warning-color, #ff9800);
+    --time-danger: var(--error-color, #f44336);
+    
+    /* Animation timings */
+    --anim-fast: 0.2s;
+    --anim-normal: 0.3s;
+    --anim-slow: 0.5s;
+    
+    /* Touch-specific variables */
+    --touch-target-size: 48px;
+    --swipe-threshold: 100px;
+}
+
+/* Dark mode variables */
+html[data-theme="dark"] {
+    --bg-white: #121212;
+    --bg-light: #1e1e1e;
+    --bg-medium: #2d2d2d;
+    --text-primary: #f5f5f5;
+    --text-secondary: #b0b0b0;
+    --border-color: #333333;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.4);
+    
+    /* Adjust status backgrounds for dark mode */
+    --status-pendente-bg: rgba(255, 152, 0, 0.2);
+    --status-preparo-bg: rgba(33, 150, 243, 0.2);
+    --status-pronto-bg: rgba(76, 175, 80, 0.2);
+    --status-entregue-bg: rgba(158, 158, 158, 0.2);
+}
+
+/* Font size adjustments */
+html[data-font-size="small"] {
+    font-size: 14px;
+}
+
+html[data-font-size="medium"] {
+    font-size: 16px;
+}
+
+html[data-font-size="large"] {
+    font-size: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   BASE LAYOUT & FIXES FOR TABLETS
+   -------------------------------------------------------------------------- */
+* {
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    touch-action: manipulation; /* Improves touch performance */
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent bounce effect on many tablets */
+    position: fixed; /* Helps with iOS scrolling issues */
+}
+
+.cozinha-body {
+    background-color: #f8f9fa;
+    font-family: var(--font-primary, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+    color: var(--text-primary, #212121);
+    overscroll-behavior: none; /* Prevents pull-to-refresh on tablets */
+    text-size-adjust: 100%; /* Prevents text size adjustment on orientation change */
+}
+
+.app-container,
+.cozinha-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.cozinha-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior: contain; /* Prevents navigation gestures from triggering */
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    transition: opacity 0.3s ease;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #eee;
+    border-top: 6px solid var(--kitchen-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 16px;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Offline indicator */
+.offline-indicator {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    background-color: var(--error-color, #f44336);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+    align-items: center;
+    gap: 8px;
+    animation: slideUp 0.3s ease;
+}
+
+/* Custom scrollbar for better touch feedback */
+.cozinha-content::-webkit-scrollbar {
+    width: 10px; /* Wider for touch */
+    height: 10px;
+}
+
+.cozinha-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+}
+
+.cozinha-content::-webkit-scrollbar-thumb {
+    background: var(--kitchen-primary);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.cozinha-content::-webkit-scrollbar-thumb:hover {
+    background: var(--kitchen-dark);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+/* --------------------------------------------------------------------------
+   HEADER STYLES - OPTIMIZED FOR TABLETS
+   -------------------------------------------------------------------------- */
+.cozinha-header {
+    background-color: var(--kitchen-dark);
+    color: white;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+}
+
+.cozinha-logo {
+    display: flex;
+    align-items: center;
+}
+
+.cozinha-logo img {
+    height: 40px;
+    margin-right: 16px;
+}
+
+.cozinha-logo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.cozinha-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cozinha-time {
+    background-color: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 16px;
+}
+
+.cozinha-time i {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Touch-friendly buttons */
+.btn-touch {
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+    padding: 8px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   TABS SYSTEM - FIXED POSITIONING FOR TABLETS
+   -------------------------------------------------------------------------- */
+.cozinha-tabs-container {
+    background-color: var(--bg-white, #ffffff);
+    border-radius: 0;
+    margin: 0;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    width: 100%;
+}
+
+.cozinha-tabs {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none; /* Hide scrollbar on IE/Edge */
+    scrollbar-width: none; /* Hide scrollbar on Firefox */
+    padding: 0;
+}
+
+.cozinha-tabs::-webkit-scrollbar {
+    display: none; /* Hide scrollbar on Chrome/Safari */
+}
+
+.cozinha-tab {
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary, #757575);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex: 1;
+    min-width: max-content;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 3px solid transparent;
+    min-height: var(--touch-target-size);
+    touch-action: manipulation;
+}
+
+.cozinha-tab i {
+    font-size: 1.2rem;
+}
+
+.cozinha-tab:hover {
+    background-color: rgba(255, 109, 0, 0.05);
+    color: var(--kitchen-primary);
+}
+
+.cozinha-tab.active {
+    color: var(--kitchen-primary);
+    background-color: rgba(255, 109, 0, 0.1);
+    border-bottom-color: var(--kitchen-primary);
+}
+
+.tab-counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    padding: 0 4px;
+    background-color: var(--bg-medium, #e0e0e0);
+    color: var(--text-primary, #212121);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tab-counter.warning {
+    background-color: var(--status-pendente-bg);
+    color: var(--status-pendente);
+}
+
+.tab-counter.info {
+    background-color: var(--status-preparo-bg);
+    color: var(--status-preparo);
+}
+
+.tab-counter.success {
+    background-color: var(--status-pronto-bg);
+    color: var(--status-pronto);
+}
+
+.tab-counter.muted {
+    background-color: var(--status-entregue-bg);
+    color: var(--status-entregue);
+}
+
+/* --------------------------------------------------------------------------
+   FILTER PANEL - COLLAPSIBLE FOR TABLETS
+   -------------------------------------------------------------------------- */
+.filter-panel {
+    background-color: var(--bg-white, #ffffff);
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.filter-toggle-btn {
+    width: 100%;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: none;
+    border: none;
+    color: var(--text-secondary, #757575);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    min-height: var(--touch-target-size);
+}
+
+.filter-toggle-btn i {
+    font-size: 1.1rem;
+}
+
+.filter-chevron {
+    transition: transform 0.3s ease;
+}
+
+.filter-toggle-btn[aria-expanded="true"] .filter-chevron {
+    transform: rotate(180deg);
+}
+
+.filter-controls {
+    padding: 16px;
+    display: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+.filter-controls.show {
+    display: block;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cozinha-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.cozinha-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.cozinha-filter label {
+    font-weight: 500;
+    color: var(--text-secondary, #757575);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Touch-friendly inputs */
+.touch-input,
+.cozinha-filter select,
+.cozinha-search input {
+    min-height: var(--touch-target-size);
+    padding: 8px 16px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    background-color: var(--bg-white, #ffffff);
+    color: var(--text-primary, #212121);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    flex-grow: 1;
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+}
+
+.cozinha-filter select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10L6 8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.cozinha-filter select:hover,
+.cozinha-search input:hover {
+    border-color: var(--kitchen-primary);
+}
+
+.cozinha-filter select:focus,
+.cozinha-search input:focus {
+    border-color: var(--kitchen-primary);
+    box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.2);
+    outline: none;
+}
+
+.cozinha-search {
+    display: flex;
+    position: relative;
+    flex-grow: 2;
+}
+
+.cozinha-search input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.cozinha-search button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 48px;
+    background: none;
+    border: none;
+    color: var(--text-secondary, #757575);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.cozinha-search button:hover {
+    color: var(--kitchen-primary);
+}
+
+.cozinha-view-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.view-label {
+    font-weight: 500;
+    color: var(--text-secondary, #757575);
+    font-size: 0.9rem;
+}
+
+.cozinha-view {
+    display: flex;
+    gap: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.view-btn {
+    width: var(--touch-target-size);
+    height: var(--touch-target-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-white, #ffffff);
+    color: var(--text-secondary, #757575);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    background-color: rgba(255, 109, 0, 0.1);
+    color: var(--kitchen-primary);
+}
+
+.view-btn.active {
+    background-color: var(--kitchen-primary);
+    color: white;
+}
+
+.cozinha-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.cozinha-sort label {
+    font-weight: 500;
+    color: var(--text-secondary, #757575);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   PEDIDOS CONTAINER
+   -------------------------------------------------------------------------- */
+.pedidos-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding: 16px;
+}
+
+.tab-content {
+    display: none;
+    height: 100%;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.pedidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* List view override with optimizations for touch */
+.pedidos-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.list-view .pedido-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: auto;
+    min-height: 100px;
+}
+
+.list-view .pedido-header {
+    min-width: 140px;
+    width: 30%;
+    border-right: 1px solid var(--border-color, #e0e0e0);
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.list-view .pedido-body {
+    flex: 1;
+    min-width: 200px;
+    max-height: none;
+    padding: 12px 16px;
+}
+
+.list-view .pedido-footer {
+    width: 130px;
+    border-left: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.list-view .pedido-actions {
+    flex-direction: column;
+}
+
+.list-view .pedido-itens {
+    max-height: none;
+}
+
+.list-view .btn-status {
+    margin-bottom: 8px;
+}
+
+/* Scroll to top button */
+.scroll-to-top {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--kitchen-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: none;
+    z-index: 5;
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+    background-color: var(--kitchen-dark);
+}
+
+/* Empty state styling */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background-color: var(--bg-white, #ffffff);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+    text-align: center;
+    margin: 32px auto;
+    max-width: 500px;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--text-muted, #9e9e9e);
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--text-primary, #212121);
+}
+
+.empty-state p {
+    color: var(--text-secondary, #757575);
+    margin-bottom: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   PEDIDO CARDS - OPTIMIZED FOR TOUCH
+   -------------------------------------------------------------------------- */
+.pedido-card {
+    background-color: var(--bg-white, #ffffff);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 6px solid transparent; /* Larger for visibility */
+    position: relative;
+    height: 100%;
+    touch-action: pan-y; /* Enable vertical scrolling but allow horizontal swiping */
+}
+
+/* Hover effect only on non-touch devices */
+@media (hover: hover) {
+    .pedido-card:hover {
+        box-shadow: var(--shadow-md, 0 3px 6px rgba(0, 0, 0, 0.16));
+        transform: translateY(-3px);
+    }
+}
+
+/* Feedback for active touch state */
+.pedido-card:active {
+    box-shadow: var(--shadow-md, 0 3px 6px rgba(0, 0, 0, 0.16));
+    transform: scale(0.99);
+}
+
+/* Priority indicator - more visible */
+.priority-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 0 12px 0 12px;
+}
+
+.pedido-card.high-priority .priority-indicator {
+    color: var(--priority-alta);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Status colors for cards - more visible border */
+.pedido-card.pendente {
+    border-left-color: var(--status-pendente);
+}
+
+.pedido-card.em-preparo {
+    border-left-color: var(--status-preparo);
+}
+
+.pedido-card.pronto {
+    border-left-color: var(--status-pronto);
+}
+
+.pedido-card.entregue {
+    border-left-color: var(--status-entregue);
+    opacity: 0.8;
+}
+
+/* Card transition */
+.pedido-card.highlight-transition {
+    animation: highlightTransition 1s ease;
+}
+
+@keyframes highlightTransition {
+    0% {
+        background-color: rgba(255, 109, 0, 0.3);
+    }
+    100% {
+        background-color: var(--bg-white, #ffffff);
+    }
+}
+
+/* Card header - improved for touch */
+.pedido-header {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.pedido-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pedido-numero {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-primary, #212121);
+}
+
+.pedido-mesa {
+    background-color: var(--primary-light, #64b5f6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    align-self: flex-start;
+}
+
+/* Special mesa types */
+.pedido-mesa.delivery {
+    background-color: var(--warning-color, #ff9800);
+}
+
+.pedido-mesa.viagem {
+    background-color: var(--secondary-color, #00897b);
+}
+
+.pedido-tempo {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #757575);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.pedido-tempo.warning {
+    color: var(--warning-color, #ff9800);
+    font-weight: 500;
+}
+
+.pedido-tempo.danger {
+    color: var(--error-color, #f44336);
+    font-weight: 600;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.pedido-status {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pedido-status.pendente {
+    background-color: var(--status-pendente-bg);
+    color: var(--status-pendente);
+}
+
+.pedido-status.em-preparo {
+    background-color: var(--status-preparo-bg);
+    color: var(--status-preparo);
+}
+
+.pedido-status.pronto {
+    background-color: var(--status-pronto-bg);
+    color: var(--status-pronto);
+}
+
+.pedido-status.entregue {
+    background-color: var(--status-entregue-bg);
+    color: var(--status-entregue);
+}
+
+/* Card body */
+.pedido-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 280px;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Progress container */
+.progress-container {
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 12px; /* Taller for touch */
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--status-preparo);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Items list */
+.pedido-itens {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+}
+
+.pedido-item {
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color, #e0e0e0);
+}
+
+.pedido-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.item-header {
+    display: flex;
+    align-items: baseline;
+}
+
+.item-qty {
+    font-weight: 600;
+    margin-right: 8px;
+    color: var(--kitchen-primary);
+    min-width: 25px;
+    font-size: 1.1rem;
+}
+
+.item-nome {
+    flex: 1;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.item-obs {
+    padding-left: 25px;
+    margin-top: 3px;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #757575);
+    font-style: italic;
+}
+
+/* Status indicators */
+.ready-indicator,
+.delivered-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    margin-bottom: 16px;
+    background-color: var(--status-pronto-bg);
+    color: var(--status-pronto);
+    border-radius: 8px;
+    font-weight: 500;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.delivered-indicator {
+    background-color: var(--status-entregue-bg);
+    color: var(--status-entregue);
+}
+
+.pedido-notas {
+    margin-top: auto;
+    padding: 12px;
+    background-color: rgba(255, 193, 7, 0.15);
+    border-left: 4px solid var(--warning-color, #ff9800);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary, #757575);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pedido-notas i {
+    color: var(--warning-color, #ff9800);
+    font-size: 1.2rem;
+}
+
+.cook-assigned {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #757575);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Collapsed items (for completed orders) */
+.pedido-itens.collapsed {
+    max-height: 70px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.btn-expand {
+    align-self: center;
+    background: none;
+    border: none;
+    color: var(--kitchen-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    min-height: var(--touch-target-size);
+}
+
+.btn-expand:hover {
+    background-color: rgba(255, 109, 0, 0.1);
+}
+
+/* Card footer */
+.pedido-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.pedido-garcom,
+.pedido-cliente,
+.pedido-timer {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #757575);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pedido-timestamps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #757575);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   ACTION BUTTONS & SWIPE GESTURES - TABLET OPTIMIZED
+   -------------------------------------------------------------------------- */
+.pedido-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+/* Swipe area for gesture-based actions */
+.action-swipe-area {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 56px; /* Taller for touch */
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.swipe-btn {
+    width: 100%;
+    height: 100%;
+    background-color: var(--kitchen-primary);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    touch-action: pan-x; /* Only allow horizontal swiping */
+}
+
+.swipe-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(to left, rgba(255,255,255,0.3), transparent);
+    opacity: 0.5;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Button styles for different actions */
+.btn-iniciar {
+    background-color: var(--status-pendente);
+}
+
+.btn-iniciar:hover {
+    background-color: #f57c00;
+}
+
+.btn-concluir {
+    background-color: var(--status-preparo);
+}
+
+.btn-concluir:hover {
+    background-color: #1976d2;
+}
+
+.btn-entregar {
+    background-color: var(--status-pronto);
+}
+
+.btn-entregar:hover {
+    background-color: #388e3c;
+}
+
+/* Gesture guide */
+.gesture-guide {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 90%;
+    width: 300px;
+    z-index: 1000;
+    display: none;
+}
+
+.gesture-guide.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.gesture-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.gesture-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.gesture-arrow {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%);
+    animation: slideRight 1.5s infinite;
+}
+
+@keyframes slideRight {
+    0%, 100% { transform: translate(-20px, -50%); opacity: 0; }
+    50% { transform: translate(0, -50%); opacity: 1; }
+    100% { transform: translate(20px, -50%); opacity: 0; }
+}
+
+.btn-dismiss {
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-top: 16px;
+    cursor: pointer;
+    min-height: var(--touch-target-size);
+    min-width: 100px;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER STYLES - FIXED FOR TABLET
+   -------------------------------------------------------------------------- */
+.cozinha-footer {
+    background-color: var(--kitchen-dark);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    position: sticky;
+    bottom: 0;
+    flex-shrink: 0;
+}
+
+.estatisticas {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+}
+
+.estatisticas::-webkit-scrollbar {
+    display: none;
+}
+
+.estat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: fit-content;
+}
+
+.estat-item i {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.estat-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.estat-valor {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.cozinha-footer-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Make touch targets larger */
+.touch-target {
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+    display: flex;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   MODAL STYLES - OPTIMIZED FOR TABLET
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: none;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.modal-overlay[aria-hidden="false"] {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: var(--bg-white, #ffffff);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg, 0 10px 20px rgba(0, 0, 0, 0.19));
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 101;
+    display: none;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Tablet-specific modal adjustments */
+.tablet-modal {
+    max-width: 90%;
+    width: 650px; /* Wider for tablet */
+}
+
+.modal[aria-hidden="false"] {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--kitchen-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-secondary, #757575);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--error-color, #f44336);
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+/* Larger buttons for modals on tablet */
+.btn-lg {
+    min-height: 56px;
+    min-width: 120px;
+    font-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   CONFIGURATION MODAL STYLES
+   -------------------------------------------------------------------------- */
+.config-section {
+    margin-bottom: 24px;
+}
+
+.config-section h3 {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.2rem;
+}
+
+.config-option {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.switch-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--kitchen-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.chef-list {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.chef-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chef-item:last-child {
+    border-bottom: none;
+}
+
+.chef-status {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.chef-status.active {
+    color: var(--success-color);
+}
+
+/* --------------------------------------------------------------------------
+   NOTIFICATION STYLES - OPTIMIZED FOR TOUCH
+   -------------------------------------------------------------------------- */
+.notifications-container {
+    position: fixed;
+    bottom: 80px; /* Above the footer */
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    pointer-events: none;
+    max-width: 320px;
+}
+
+.notification {
+    background-color: var(--bg-white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    transform: translateX(120%);
+    animation: slideIn 0.3s forwards, fadeOut 0.3s 5s forwards;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    min-height: var(--touch-target-size);
+}
+
+.notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background-color: var(--kitchen-primary);
+}
+
+.notification.success::before {
+    background-color: var(--status-pronto);
+}
+
+.notification.error::before {
+    background-color: var(--error-color, #f44336);
+}
+
+.notification.warning::before {
+    background-color: var(--warning-color, #ff9800);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(120%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(120%); }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE STYLES - TABLET FOCUSED
+   -------------------------------------------------------------------------- */
+/* Landscape orientation */
+@media (orientation: landscape) {
+    .pedidos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+    
+    .cozinha-tabs-container {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+    
+    .cozinha-header {
+        padding: 12px 16px;
+    }
+    
+    .cozinha-footer {
+        padding: 8px 16px;
+    }
+}
+
+/* Large tablets (iPad Pro, etc) */
+@media (min-width: 1024px) {
+    .pedidos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+    
+    .cozinha-filter-group {
+        flex-wrap: nowrap;
+    }
+    
+    .tablet-modal {
+        max-width: 800px;
+    }
+}
+
+/* Medium tablets */
+@media (max-width: 900px) {
+    .cozinha-logo h1 {
+        font-size: 1.3rem;
+    }
+    
+    .cozinha-time {
+        padding: 6px 12px;
+        font-size: 1rem;
+    }
+    
+    .btn-touch span {
+        display: none; /* Hide text on smaller tablets */
+    }
+    
+    .btn-touch {
+        padding: 0;
+        width: var(--touch-target-size);
+        justify-content: center;
+    }
+    
+    .estatisticas {
+        gap: 16px;
+    }
+    
+    .estat-label {
+        display: none;
+    }
+}
+
+/* Small tablets and large phones */
+@media (max-width: 768px) {
+    .pedidos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cozinha-header,
+    .cozinha-footer {
+        padding: 12px;
+    }
+    
+    .cozinha-logo img {
+        height: 30px;
+        margin-right: 12px;
+    }
+    
+    .cozinha-tab {
+        padding: 12px;
+    }
+    
+    .cozinha-tab span:not(.tab-counter) {
+        display: none; /* Hide text but keep counter */
+    }
+    
+    .cozinha-search {
+        flex-grow: 1;
+    }
+    
+    .view-label,
+    .cozinha-sort label,
+    .cozinha-filter label {
+        display: none;
+    }
+    
+    .list-view .pedido-header {
+        min-width: 120px;
+    }
+    
+    .timestamp {
+        font-size: 0.7rem;
+    }
+    
+    .tablet-modal {
+        width: 95%;
+        max-height: 80vh;
+    }
+}
+
+/* PRINT STYLES */
+@media print {
+    .cozinha-header,
+    .cozinha-tabs-container,
+    .filter-panel,
+    .cozinha-footer,
+    .pedido-actions,
+    .btn,
+    .scroll-to-top {
+        display: none !important;
+    }
+    
+    .cozinha-body,
+    .app-container,
+    .cozinha-container,
+    .cozinha-content {
+        height: auto;
+        overflow: visible;
+        background: white;
+    }
+    
+    .pedido-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .pedidos-grid {
+        display: block;
+    }
+    
+    .pedido-body {
+        max-height: none;
+    }
+    
+    .pedido-itens.collapsed {
+        max-height: none;
+    }
+    
+    .btn-expand {
+        display: none;
+    }
+    
+    .priority-indicator {
+        display: none;
+    }
+}

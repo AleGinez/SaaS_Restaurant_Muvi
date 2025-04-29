@@ -1,0 +1,208 @@
+-- Script de inserção de dados de exemplo para testes do Sistema SaaS de Restaurante Pesqueiro
+-- Banco de dados: PostgreSQL
+-- Schema: restaurante_01
+
+-- Definir o schema como padrão para as operações subsequentes
+SET search_path TO restaurante_01;
+
+-- 1. INSERÇÃO DE USUÁRIOS DE TESTE
+INSERT INTO usuarios (nome, email, senha, telefone, ativo) VALUES
+('Maria Gerente', 'gerente@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 98765-4321', true),
+('João Garçom', 'garcom@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 97654-3210', true),
+('Ana Caixa', 'caixa@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 96543-2109', true),
+('Carlos Cozinha', 'cozinha@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 95432-1098', true),
+('Paulo Estoquista', 'estoque@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 94321-0987', true),
+('Lúcia RH', 'rh@restaurante.com', '$2a$10$JwLDJ0ypLG9Vv.dHciZfVeMD8AYTD9uQ90/LS6RyJKpC5iJnXTUJa', '(11) 93210-9876', true);
+-- Senha: admin123 (mesmo hash bcrypt para todos os usuários)
+
+-- Associar usuários aos perfis correspondentes
+INSERT INTO usuarios_perfis (usuario_id, perfil_id) VALUES
+(2, 2), -- Maria Gerente -> Perfil Gerente
+(3, 3), -- João Garçom -> Perfil Garçom
+(4, 4), -- Ana Caixa -> Perfil Caixa
+(5, 5), -- Carlos Cozinha -> Perfil Cozinha
+(6, 6), -- Paulo Estoquista -> Perfil Estoquista
+(7, 7); -- Lúcia RH -> Perfil RH
+
+-- 2. INSERÇÃO DE FUNCIONÁRIOS
+INSERT INTO funcionarios (usuario_id, nome, cpf, data_nascimento, endereco, cidade, estado, cep, telefone, email, cargo, salario, data_contratacao, ativo) VALUES
+(2, 'Maria Gerente', '123.456.789-00', '1985-05-15', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '(11) 98765-4321', 'gerente@restaurante.com', 'Gerente', 4500.00, '2022-01-10', true),
+(3, 'João Garçom', '234.567.890-11', '1990-08-20', 'Av. Principal, 456', 'São Paulo', 'SP', '01234-568', '(11) 97654-3210', 'garcom@restaurante.com', 'Garçom', 1800.00, '2022-02-15', true),
+(4, 'Ana Caixa', '345.678.901-22', '1988-03-25', 'Rua do Comércio, 789', 'São Paulo', 'SP', '01234-569', '(11) 96543-2109', 'caixa@restaurante.com', 'Operador de Caixa', 1900.00, '2022-01-20', true),
+(5, 'Carlos Cozinha', '456.789.012-33', '1975-06-12', 'Travessa da Lagoa, 101', 'São Paulo', 'SP', '01234-570', '(11) 95432-1098', 'cozinha@restaurante.com', 'Cozinheiro Chefe', 3200.00, '2022-01-05', true),
+(6, 'Paulo Estoquista', '567.890.123-44', '1992-11-08', 'Alameda dos Anjos, 202', 'São Paulo', 'SP', '01234-571', '(11) 94321-0987', 'estoque@restaurante.com', 'Auxiliar de Estoque', 1700.00, '2022-03-01', true),
+(7, 'Lúcia RH', '678.901.234-55', '1983-07-30', 'Rua das Margaridas, 303', 'São Paulo', 'SP', '01234-572', '(11) 93210-9876', 'rh@restaurante.com', 'Analista de RH', 3000.00, '2022-01-15', true);
+
+-- Inserir outros funcionários sem usuário associado
+INSERT INTO funcionarios (nome, cpf, data_nascimento, endereco, cidade, estado, cep, telefone, email, cargo, salario, data_contratacao, ativo) VALUES
+('Roberto Auxiliar', '789.012.345-66', '1995-04-18', 'Rua dos Pinheiros, 404', 'São Paulo', 'SP', '01234-573', '(11) 92109-8765', 'auxiliar@restaurante.com', 'Auxiliar de Cozinha', 1600.00, '2022-03-15', true),
+('Fernanda Atendente', '890.123.456-77', '1994-09-22', 'Avenida Paulista, 505', 'São Paulo', 'SP', '01234-574', '(11) 91098-7654', 'atendente@restaurante.com', 'Atendente', 1700.00, '2022-04-01', true),
+('Marcelo Limpeza', '901.234.567-88', '1980-12-05', 'Rua Vergueiro, 606', 'São Paulo', 'SP', '01234-575', '(11) 90987-6543', 'limpeza@restaurante.com', 'Auxiliar de Limpeza', 1500.00, '2022-02-10', true);
+
+-- 3. ASSOCIAÇÃO DE FUNCIONÁRIOS ÀS ESCALAS
+INSERT INTO funcionarios_escalas (funcionario_id, escala_id, data_inicio, hora_inicio, hora_fim, dia_semana) VALUES
+-- Maria Gerente - Comercial em dias de semana
+(1, 4, '2023-01-01', '08:00', '17:00', 1),
+(1, 4, '2023-01-01', '08:00', '17:00', 2),
+(1, 4, '2023-01-01', '08:00', '17:00', 3),
+(1, 4, '2023-01-01', '08:00', '17:00', 4),
+(1, 4, '2023-01-01', '08:00', '17:00', 5),
+
+-- João Garçom - Tarde em dias de semana, Fim de Semana em fim de semana
+(2, 2, '2023-01-01', '14:00', '22:00', 1),
+(2, 2, '2023-01-01', '14:00', '22:00', 2),
+(2, 2, '2023-01-01', '14:00', '22:00', 3),
+(2, 2, '2023-01-01', '14:00', '22:00', 4),
+(2, 2, '2023-01-01', '14:00', '22:00', 5),
+(2, 5, '2023-01-01', '10:00', '18:00', 6),
+(2, 5, '2023-01-01', '10:00', '18:00', 0);
+
+-- 4. INSERÇÃO DE FORNECEDORES
+INSERT INTO fornecedores (nome, razao_social, cnpj, endereco, cidade, estado, cep, telefone, email, contato_nome, ativo) VALUES
+('Distribuidora de Bebidas ABC', 'ABC Distribuidora LTDA', '12.345.678/0001-90', 'Rua das Bebidas, 123', 'São Paulo', 'SP', '01230-000', '(11) 3456-7890', 'contato@abcbebidas.com.br', 'Ricardo Vendas', true),
+('Pescados Frescos', 'Pescados Frescos LTDA', '23.456.789/0001-01', 'Av. do Mar, 456', 'Santos', 'SP', '11000-000', '(13) 3456-7890', 'vendas@pescadosfrescos.com.br', 'Marina Costa', true),
+('Hortifrutti Direto', 'Hortifrutti Direto EIRELI', '34.567.890/0001-12', 'Rodovia dos Agricultores, km 5', 'Campinas', 'SP', '13000-000', '(19) 3456-7890', 'pedidos@hortifrutti.com.br', 'José Produção', true),
+('Embalagens Seguras', 'Embalagens Seguras S/A', '45.678.901/0001-23', 'Distrito Industrial, Quadra 3', 'Guarulhos', 'SP', '07000-000', '(11) 4567-8901', 'vendas@embalagensseguras.com.br', 'Fátima Embalagens', true),
+('Distribuidora de Alimentos JK', 'JK Alimentos LTDA', '56.789.012/0001-34', 'Rua dos Atacadistas, 789', 'São Paulo', 'SP', '02000-000', '(11) 5678-9012', 'comercial@jkalimentos.com.br', 'João Almeida', true);
+
+-- 5. INSERÇÃO DE PRODUTOS
+-- Bebidas
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('B001', 'Água Mineral 500ml', 'Água mineral sem gás garrafa 500ml', 1, 1.20, 4.00, 100, 20, 1, true, true),
+('B002', 'Água Mineral 500ml com Gás', 'Água mineral com gás garrafa 500ml', 1, 1.30, 4.50, 50, 10, 1, true, true),
+('B003', 'Refrigerante Cola 350ml', 'Refrigerante tipo cola lata 350ml', 1, 2.00, 6.00, 80, 15, 1, true, true),
+('B004', 'Refrigerante Guaraná 350ml', 'Refrigerante guaraná lata 350ml', 1, 1.90, 6.00, 80, 15, 1, true, true),
+('B005', 'Suco Natural Laranja 500ml', 'Suco de laranja natural 500ml', 1, 3.00, 8.00, 20, 5, 1, true, true),
+('B006', 'Cerveja Pilsen 600ml', 'Cerveja tipo pilsen garrafa 600ml', 1, 5.00, 12.00, 60, 10, 1, true, true),
+('B007', 'Cerveja IPA 350ml', 'Cerveja artesanal IPA lata 350ml', 1, 6.00, 15.00, 40, 8, 1, true, true),
+('B008', 'Caipirinha', 'Caipirinha tradicional de limão', 1, 4.00, 15.00, 0, 0, 1, false, true);
+
+-- Peixes
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('P001', 'Tilápia Inteira', 'Tilápia fresca inteira', 3, 15.00, 35.00, 20, 5, 2, true, true),
+('P002', 'Filé de Tilápia', 'Filé de tilápia fresco', 3, 25.00, 60.00, 15, 3, 2, true, true),
+('P003', 'Pintado', 'Pintado fresco inteiro', 3, 30.00, 70.00, 8, 2, 2, true, true),
+('P004', 'Tambaqui', 'Tambaqui fresco inteiro', 3, 28.00, 65.00, 10, 3, 2, true, true),
+('P005', 'Pacu', 'Pacu fresco inteiro', 3, 25.00, 55.00, 12, 3, 2, true, true),
+('P006', 'Dourado', 'Dourado fresco inteiro', 3, 35.00, 80.00, 5, 2, 2, true, true);
+
+-- Porções
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('PO001', 'Porção de Tilápia Frita', 'Porção de filés de tilápia empanados e fritos', 4, 20.00, 45.00, 0, 0, 13, false, true),
+('PO002', 'Porção de Mandioca Frita', 'Porção de mandioca frita crocante', 4, 5.00, 25.00, 0, 0, 13, false, true),
+('PO003', 'Porção de Batata Frita', 'Porção de batata frita crocante', 4, 6.00, 25.00, 0, 0, 13, false, true),
+('PO004', 'Porção de Isca de Peixe', 'Porção de iscas de peixe empanadas', 4, 18.00, 40.00, 0, 0, 13, false, true),
+('PO005', 'Porção de Camarão', 'Porção de camarões empanados', 4, 30.00, 65.00, 0, 0, 13, false, true);
+
+-- Pratos Executivos
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('PE001', 'Tilápia Grelhada', 'Filé de tilápia grelhado com arroz, feijão e salada', 6, 25.00, 55.00, 0, 0, 13, false, true),
+('PE002', 'Pintado ao Molho', 'Pintado ao molho de ervas com purê de mandioca', 6, 30.00, 65.00, 0, 0, 13, false, true),
+('PE003', 'Pacu Assado', 'Pacu assado na brasa com vinagrete e farofa', 6, 28.00, 60.00, 0, 0, 13, false, true);
+
+-- Sobremesas
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('S001', 'Pudim de Leite', 'Pudim de leite tradicional', 5, 5.00, 15.00, 10, 3, 1, true, true),
+('S002', 'Mousse de Maracujá', 'Mousse de maracujá com calda', 5, 4.00, 12.00, 10, 3, 1, true, true),
+('S003', 'Sorvete de Creme', 'Bola de sorvete de creme com calda de chocolate', 5, 3.00, 8.00, 20, 5, 1, true, true),
+('S004', 'Salada de Frutas', 'Salada de frutas da estação com ou sem leite condensado', 5, 6.00, 12.00, 8, 2, 1, true, true);
+
+-- Insumos (não disponíveis para venda, apenas estoque)
+INSERT INTO produtos (codigo, nome, descricao, categoria_id, preco_custo, preco_venda, estoque_atual, estoque_minimo, unidade_medida_id, controlado_estoque, disponivel_venda) VALUES
+('I001', 'Arroz 5kg', 'Saco de arroz 5kg', 7, 20.00, 0.00, 10, 2, 1, true, false),
+('I002', 'Feijão 1kg', 'Pacote de feijão 1kg', 7, 8.00, 0.00, 15, 3, 1, true, false),
+('I003', 'Óleo de Soja 900ml', 'Garrafa de óleo de soja 900ml', 7, 7.00, 0.00, 20, 5, 1, true, false),
+('I004', 'Sal 1kg', 'Pacote de sal 1kg', 7, 2.00, 0.00, 12, 3, 1, true, false),
+('I005', 'Farinha de Trigo 1kg', 'Pacote de farinha de trigo 1kg', 7, 5.00, 0.00, 8, 2, 1, true, false),
+('I006', 'Farinha de Mandioca 1kg', 'Pacote de farinha de mandioca 1kg', 7, 6.00, 0.00, 8, 2, 1, true, false);
+
+-- 6. VINCULAR PRODUTOS AO CARDÁPIO
+INSERT INTO cardapios_produtos (cardapio_id, produto_id, disponivel) 
+SELECT 1, id, true FROM produtos WHERE disponivel_venda = true;
+
+-- 7. MOVIMENTAÇÕES DE ESTOQUE
+-- Entradas de estoque
+INSERT INTO entradas_estoque (produto_id, fornecedor_id, quantidade, preco_unitario, valor_total, data_entrada, numero_nota_fiscal, usuario_id) VALUES
+-- Bebidas do fornecedor ABC
+(1, 1, 50, 1.20, 60.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+(2, 1, 30, 1.30, 39.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+(3, 1, 40, 2.00, 80.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+(4, 1, 40, 1.90, 76.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+(6, 1, 30, 5.00, 150.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+(7, 1, 20, 6.00, 120.00, CURRENT_DATE - INTERVAL '15 days', 'NF12345', 6),
+
+-- Peixes do fornecedor Pescados Frescos
+(9, 2, 10, 15.00, 150.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6),
+(10, 2, 8, 25.00, 200.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6),
+(11, 2, 4, 30.00, 120.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6),
+(12, 2, 5, 28.00, 140.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6),
+(13, 2, 6, 25.00, 150.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6),
+(14, 2, 3, 35.00, 105.00, CURRENT_DATE - INTERVAL '5 days', 'NF54321', 6);
+
+-- Registrar algumas saídas de estoque (consumo interno, quebras, etc.)
+INSERT INTO saidas_estoque (produto_id, quantidade, motivo, data_saida, observacao, usuario_id) VALUES
+(1, 5, 'Consumo Interno', CURRENT_DATE - INTERVAL '7 days', 'Consumo de funcionários', 6),
+(3, 5, 'Consumo Interno', CURRENT_DATE - INTERVAL '7 days', 'Consumo de funcionários', 6),
+(4, 5, 'Consumo Interno', CURRENT_DATE - INTERVAL '7 days', 'Consumo de funcionários', 6);
+
+-- 8. RESERVAS DE MESAS
+INSERT INTO reservas (mesa_id, cliente_nome, cliente_telefone, cliente_email, data_reserva, hora_inicio, hora_fim, num_pessoas, observacao, status, usuario_id) VALUES
+(3, 'Carlos Silva', '(11) 98765-4321', 'carlos@email.com', CURRENT_DATE + INTERVAL '1 day', '19:00', '22:00', 4, 'Aniversário', 'Confirmada', 2),
+(5, 'Mariana Oliveira', '(11) 98765-1234', 'mariana@email.com', CURRENT_DATE + INTERVAL '2 days', '20:00', '23:00', 6, 'Reunião de amigos', 'Confirmada', 2),
+(8, 'Roberto Almeida', '(11) 99876-5432', 'roberto@email.com', CURRENT_DATE + INTERVAL '3 days', '12:00', '15:00', 2, 'Almoço de negócios', 'Confirmada', 2),
+(4, 'Fernando Costa', '(11) 97654-3210', 'fernando@email.com', CURRENT_DATE - INTERVAL '1 day', '19:00', '22:00', 4, '', 'Concluída', 2),
+(6, 'Juliana Santos', '(11) 95432-1098', 'juliana@email.com', CURRENT_DATE - INTERVAL '1 day', '20:00', '23:00', 3, '', 'Cancelada', 2);
+
+-- 9. PEDIDOS E ITENS DE PEDIDOS (EXEMPLOS DE VENDAS)
+-- Pedido 1 - Mesa 1 - Fechado e pago
+INSERT INTO pedidos (mesa_id, status, observacao, data_pedido, data_fechamento, valor_subtotal, valor_desconto, valor_total, usuario_abertura, usuario_fechamento)
+VALUES (1, 'Fechado', 'Cliente pagou em dinheiro', CURRENT_DATE - INTERVAL '2 hours', CURRENT_DATE - INTERVAL '30 minutes', 135.00, 0.00, 135.00, 3, 4);
+
+-- Itens do Pedido 1
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario, valor_total, status, data_pedido, data_preparo, data_entrega)
+VALUES 
+(1, 1, 2, 4.00, 8.00, 'Entregue', CURRENT_DATE - INTERVAL '2 hours', CURRENT_DATE - INTERVAL '1 hour 50 minutes', CURRENT_DATE - INTERVAL '1 hour 40 minutes'),
+(1, 6, 2, 12.00, 24.00, 'Entregue', CURRENT_DATE - INTERVAL '2 hours', CURRENT_DATE - INTERVAL '1 hour 50 minutes', CURRENT_DATE - INTERVAL '1 hour 40 minutes'),
+(1, 15, 1, 25.00, 25.00, 'Entregue', CURRENT_DATE - INTERVAL '2 hours', CURRENT_DATE - INTERVAL '1 hour 30 minutes', CURRENT_DATE - INTERVAL '1 hour 20 minutes'),
+(1, 18, 1, 45.00, 45.00, 'Entregue', CURRENT_DATE - INTERVAL '2 hours', CURRENT_DATE - INTERVAL '1 hour 30 minutes', CURRENT_DATE - INTERVAL '1 hour 20 minutes'),
+(1, 22, 1, 15.00, 15.00, 'Entregue', CURRENT_DATE - INTERVAL '1 hour', CURRENT_DATE - INTERVAL '50 minutes', CURRENT_DATE - INTERVAL '40 minutes'),
+(1, 24, 2, 8.00, 16.00, 'Entregue', CURRENT_DATE - INTERVAL '1 hour', CURRENT_DATE - INTERVAL '50 minutes', CURRENT_DATE - INTERVAL '40 minutes');
+
+-- Pagamento do Pedido 1
+INSERT INTO pagamentos (pedido_id, forma_pagamento_id, valor, data_pagamento, usuario_id)
+VALUES (1, 1, 135.00, CURRENT_DATE - INTERVAL '30 minutes', 4);
+
+-- Pedido 2 - Mesa 2 - Em andamento
+INSERT INTO pedidos (mesa_id, status, observacao, data_pedido, valor_subtotal, valor_desconto, valor_total, usuario_abertura)
+VALUES (2, 'Em Preparo', 'Cliente solicitou pratos bem passados', CURRENT_DATE - INTERVAL '45 minutes', 165.00, 0.00, 165.00, 3);
+
+-- Itens do Pedido 2
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario, valor_total, status, data_pedido, data_preparo, data_entrega)
+VALUES 
+(2, 3, 3, 6.00, 18.00, 'Entregue', CURRENT_DATE - INTERVAL '45 minutes', CURRENT_DATE - INTERVAL '40 minutes', CURRENT_DATE - INTERVAL '35 minutes'),
+(2, 5, 2, 8.00, 16.00, 'Entregue', CURRENT_DATE - INTERVAL '45 minutes', CURRENT_DATE - INTERVAL '40 minutes', CURRENT_DATE - INTERVAL '35 minutes'),
+(2, 17, 2, 25.00, 50.00, 'Em Preparo', CURRENT_DATE - INTERVAL '45 minutes', CURRENT_DATE - INTERVAL '30 minutes', NULL),
+(2, 19, 1, 45.00, 45.00, 'Em Preparo', CURRENT_DATE - INTERVAL '45 minutes', CURRENT_DATE - INTERVAL '30 minutes', NULL),
+(2, 21, 1, 55.00, 55.00, 'Pendente', CURRENT_DATE - INTERVAL '45 minutes', NULL, NULL);
+
+-- Pedido 3 - Mesa 7 - Recém aberto
+INSERT INTO pedidos (mesa_id, status, observacao, data_pedido, valor_subtotal, valor_desconto, valor_total, usuario_abertura)
+VALUES (7, 'Aberto', 'Cliente alérgico a camarão', CURRENT_DATE - INTERVAL '10 minutes', 50.00, 0.00, 50.00, 3);
+
+-- Itens do Pedido 3
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario, valor_total, status, data_pedido)
+VALUES 
+(3, 4, 2, 6.00, 12.00, 'Entregue', CURRENT_DATE - INTERVAL '10 minutes'),
+(3, 7, 2, 15.00, 30.00, 'Pendente', CURRENT_DATE - INTERVAL '10 minutes'),
+(3, 16, 1, 25.00, 25.00, 'Pendente', CURRENT_DATE - INTERVAL '5 minutes');
+
+-- 10. ABERTURA DE CAIXA
+INSERT INTO caixas (usuario_id, data_abertura, valor_abertura, status)
+VALUES (4, CURRENT_DATE || ' 08:00:00', 200.00, 'Aberto');
+
+-- 11. MOVIMENTAÇÕES FINANCEIRAS ADICIONAIS
+INSERT INTO movimentacoes_financeiras (tipo, descricao, valor, data_movimento, categoria, observacao, usuario_id) VALUES
+('Saída', 'Pagamento de fornecedor ABC Bebidas', 525.00, CURRENT_DATE - INTERVAL '10 days', 'Fornecedores', 'Pagamento ref. NF12345', 4),
+('Saída', 'Pagamento de luz', 890.50, CURRENT_DATE - INTERVAL '5 days', 'Despesas Fixas', 'Fatura março/2023', 4),
+('Saída', 'Pagamento de água', 350.20, CURRENT_DATE - INTERVAL '5 days', 'Despesas Fixas', 'Fatura março/2023', 4),
+('Entrada', 'Recebimento de evento', 2500

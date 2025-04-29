@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Pedido - Restaurante Pesqueiro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="novo-pedido.css">
+    <script src="./novo-pedido.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal (importado do template) -->
+        <aside class="sidebar">
+            <!-- Conteúdo do sidebar será carregado via JS -->
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar produto...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <div class="page-header">
+                    <h1>Novo Pedido</h1>
+                    <div class="breadcrumb">
+                        <span>Home</span> / <span>Pedidos</span> / <span>Novo Pedido</span>
+                    </div>
+                </div>
+                
+                <!-- Formulário de Novo Pedido -->
+                <div class="pedido-container">
+                    <!-- Cabeçalho com Informações Básicas do Pedido -->
+                    <div class="pedido-header">
+                        <div class="pedido-info-grid">
+                            <!-- Tipo de Pedido / Origem -->
+                            <div class="form-group">
+                                <label for="tipo-pedido">Tipo de Pedido</label>
+                                <select id="tipo-pedido" name="tipo-pedido" class="form-control">
+                                    <option value="local" selected>Mesa (Local)</option>
+                                    <option value="viagem">Para Viagem</option>
+                                    <option value="delivery">Delivery</option>
+                                    <option value="drive_thru">Drive-Thru</option>
+                                    <option value="ifood">iFood</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Mesa (apenas visível quando tipo="local") -->
+                            <div class="form-group" id="mesa-container">
+                                <label for="mesa">Mesa</label>
+                                <div class="input-with-icon">
+                                    <select id="mesa" name="mesa" class="form-control">
+                                        <option value="">Selecione uma mesa</option>
+                                        <!-- Opções serão carregadas do banco -->
+                                    </select>
+                                    <button type="button" class="icon-button" id="ver-mapa-mesas">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Cliente -->
+                            <div class="form-group">
+                                <label for="cliente">Cliente</label>
+                                <div class="input-with-icon">
+                                    <input type="text" id="cliente" name="cliente" placeholder="Buscar cliente..." class="form-control">
+                                    <button type="button" class="icon-button" id="adicionar-cliente">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="cliente-id" name="cliente-id">
+                            </div>
+                            
+                            <!-- Atendente -->
+                            <div class="form-group">
+                                <label for="atendente">Atendente</label>
+                                <select id="atendente" name="atendente" class="form-control">
+                                    <option value="">Selecione um atendente</option>
+                                    <!-- Opções serão carregadas do banco -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Container Principal do Pedido: Produtos e Carrinho -->
+                    <div class="pedido-main">
+                        <!-- Painel de Produtos -->
+                        <div class="produtos-container">
+                            <!-- Filtro de Categorias -->
+                            <div class="categorias-filter">
+                                <button type="button" class="categoria-btn active" data-id="all">Todos</button>
+                                <!-- Botões de categoria serão adicionados via JS -->
+                            </div>
+                            
+                            <!-- Buscador de Produtos -->
+                            <div class="produtos-search">
+                                <div class="input-with-icon">
+                                    <input type="text" id="busca-produto" placeholder="Buscar produto..." class="form-control">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Grade de Produtos -->
+                            <div class="produtos-grid" id="produtos-grid">
+                                <!-- Produtos serão carregados dinamicamente via JS -->
+                                <!-- Exemplo de produto -->
+                                <div class="produto-card" data-id="1" data-categoria="1">
+                                    <div class="produto-imagem">
+                                        <img src="/api/placeholder/100/100" alt="Produto">
+                                    </div>
+                                    <div class="produto-info">
+                                        <h3 class="produto-nome">Peixe Frito</h3>
+                                        <p class="produto-descricao">Tilápia frita com acompanhamentos</p>
+                                        <span class="produto-preco">R$ 45,90</span>
+                                    </div>
+                                </div>
+                                <!-- Fim do exemplo -->
+                            </div>
+                        </div>
+                        
+                        <!-- Painel do Pedido (Carrinho) -->
+                        <div class="carrinho-container">
+                            <div class="carrinho-header">
+                                <h2>Itens do Pedido</h2>
+                                <button type="button" class="btn-outline" id="limpar-carrinho">
+                                    <i class="fas fa-trash"></i> Limpar
+                                </button>
+                            </div>
+                            
+                            <!-- Lista de Itens do Pedido -->
+                            <div class="carrinho-itens" id="carrinho-itens">
+                                <!-- Itens serão adicionados dinamicamente -->
+                                <!-- Exemplo de item no carrinho -->
+                                <div class="carrinho-item" data-id="1">
+                                    <div class="item-info">
+                                        <span class="item-quantidade">1x</span>
+                                        <div class="item-detalhes">
+                                            <h4 class="item-nome">Peixe Frito</h4>
+                                            <p class="item-modificadores">Ao molho de limão</p>
+                                        </div>
+                                    </div>
+                                    <div class="item-acoes">
+                                        <span class="item-preco">R$ 45,90</span>
+                                        <div class="item-controles">
+                                            <button type="button" class="btn-icon btn-edit-item">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn-icon btn-remove-item">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Fim do exemplo -->
+                            </div>
+                            
+                            <!-- Observações do Pedido -->
+                            <div class="carrinho-observacoes">
+                                <label for="observacoes">Observações</label>
+                                <textarea id="observacoes" name="observacoes" placeholder="Observações gerais sobre o pedido..." rows="2" class="form-control"></textarea>
+                            </div>
+                            
+                            <!-- Resumo e Totais -->
+                            <div class="carrinho-resumo">
+                                <div class="resumo-linha">
+                                    <span>Subtotal</span>
+                                    <span id="pedido-subtotal">R$ 0,00</span>
+                                </div>
+                                <div class="resumo-linha desconto-container">
+                                    <span>Desconto</span>
+                                    <div class="desconto-input">
+                                        <input type="number" id="desconto-percentual" name="desconto-percentual" placeholder="0" min="0" max="100" class="form-control small-input">
+                                        <span>%</span>
+                                        <span>R$</span>
+                                        <input type="number" id="desconto-valor" name="desconto-valor" placeholder="0,00" min="0" step="0.01" class="form-control small-input">
+                                    </div>
+                                </div>
+                                <div class="resumo-linha">
+                                    <span>Taxa de Serviço (10%)</span>
+                                    <div class="taxa-service-toggle">
+                                        <input type="checkbox" id="aplicar-taxa-servico" name="aplicar-taxa-servico" checked>
+                                        <span id="taxa-servico-valor">R$ 0,00</span>
+                                    </div>
+                                </div>
+                                <div class="resumo-linha total">
+                                    <span>Total</span>
+                                    <span id="pedido-total">R$ 0,00</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Botões de Ação -->
+                            <div class="carrinho-acoes">
+                                <button type="button" class="btn-outline btn-cancelar">Cancelar</button>
+                                <button type="button" class="btn btn-salvar-rascunho">Salvar Rascunho</button>
+                                <button type="button" class="btn btn-primary btn-confirmar-pedido">Confirmar Pedido</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal para Detalhes do Produto -->
+    <div id="modal-produto-detalhes" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-produto-nome">Detalhes do Produto</h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="produto-detalhes-container">
+                    <div class="produto-detalhes-imagem">
+                        <img id="modal-produto-imagem" src="/api/placeholder/200/200" alt="Produto">
+                    </div>
+                    <div class="produto-detalhes-info">
+                        <div class="form-group">
+                            <label for="modal-quantidade">Quantidade</label>
+                            <div class="quantidade-controle">
+                                <button type="button" class="btn-qty" id="btn-reduzir-qty">-</button>
+                                <input type="number" id="modal-quantidade" name="modal-quantidade" value="1" min="1" max="99" class="form-control">
+                                <button type="button" class="btn-qty" id="btn-aumentar-qty">+</button>
+                            </div>
+                        </div>
+                        
+                        <div id="modal-modificadores-container">
+                            <!-- Grupos de modificadores serão carregados dinamicamente -->
+                            <!-- Exemplo de grupo de modificadores -->
+                            <div class="modificadores-grupo" data-id="1">
+                                <h4 class="grupo-titulo">Ponto da Carne</h4>
+                                <p class="grupo-desc">Escolha o ponto desejado</p>
+                                <div class="modificadores-opcoes">
+                                    <label class="checkbox-container">
+                                        <input type="radio" name="ponto" value="mal">
+                                        <span class="checkmark"></span>
+                                        <span class="opcao-texto">Mal passada</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="radio" name="ponto" value="ao_ponto" checked>
+                                        <span class="checkmark"></span>
+                                        <span class="opcao-texto">Ao ponto</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="radio" name="ponto" value="bem">
+                                        <span class="checkmark"></span>
+                                        <span class="opcao-texto">Bem passada</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Fim do exemplo -->
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="modal-observacao">Observações</label>
+                            <textarea id="modal-observacao" name="modal-observacao" placeholder="Ex: Sem cebola, molho à parte..." rows="2" class="form-control"></textarea>
+                        </div>
+                        
+                        <div class="produto-detalhes-preco">
+                            <span id="modal-produto-preco-unitario">R$ 45,90</span>
+                            <span id="modal-produto-preco-total">R$ 45,90</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" id="modal-btn-cancelar">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-adicionar">Adicionar ao Pedido</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Mapa de Mesas -->
+    <div id="modal-mapa-mesas" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Mapa de Mesas</h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="mapa-filtro">
+                    <select id="filtro-area" class="form-control">
+                        <option value="all">Todas as Áreas</option>
+                        <!-- Opções serão carregadas do banco -->
+                    </select>
+                    <div class="mapa-legenda">
+                        <span class="legenda-item"><span class="status-indicator livre"></span> Livre</span>
+                        <span class="legenda-item"><span class="status-indicator ocupada"></span> Ocupada</span>
+                        <span class="legenda-item"><span class="status-indicator reservada"></span> Reservada</span>
+                    </div>
+                </div>
+                
+                <div class="mesas-grid-container">
+                    <div id="mesas-grid" class="mesas-grid">
+                        <!-- Mesas serão carregadas dinamicamente via JS -->
+                        <!-- Exemplo de mesa -->
+                        <div class="mesa-item livre" data-id="1" data-numero="01">
+                            <span class="mesa-numero">01</span>
+                            <span class="mesa-capacidade">4 lugares</span>
+                            <span class="mesa-status">Livre</span>
+                        </div>
+                        <!-- Fim do exemplo -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="modal-btn-selecionar-mesa">Selecionar Mesa</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Busca de Cliente -->
+    <div id="modal-busca-cliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buscar Cliente</h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="busca-cliente-container">
+                    <div class="input-with-icon">
+                        <input type="text" id="busca-cliente-input" placeholder="Nome, telefone ou e-mail..." class="form-control">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <div class="clientes-resultados" id="clientes-resultados">
+                        <!-- Resultados serão carregados dinamicamente -->
+                        <div class="cliente-resultado" data-id="1">
+                            <div class="cliente-info">
+                                <h4 class="cliente-nome">João Silva</h4>
+                                <p class="cliente-contato">(11) 98765-4321 | joao@email.com</p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-selecionar-cliente">Selecionar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" id="modal-btn-novo-cliente">
+                    <i class="fas fa-user-plus"></i> Novo Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Novo Cliente -->
+    <div id="modal-novo-cliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cadastrar Novo Cliente</h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-novo-cliente" class="form-cliente">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cliente-nome">Nome *</label>
+                            <input type="text" id="cliente-nome" name="cliente-nome" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente-telefone">Telefone *</label>
+                            <input type="text" id="cliente-telefone" name="cliente-telefone" class="form-control" placeholder="(00) 00000-0000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cliente-email">E-mail</label>
+                            <input type="email" id="cliente-email" name="cliente-email" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente-cpf">CPF</label>
+                            <input type="text" id="cliente-cpf" name="cliente-cpf" class="form-control" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cliente-endereco">Endereço</label>
+                        <input type="text" id="cliente-endereco" name="cliente-endereco" class="form-control">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cliente-bairro">Bairro</label>
+                            <input type="text" id="cliente-bairro" name="cliente-bairro" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente-cidade">Cidade</label>
+                            <input type="text" id="cliente-cidade" name="cliente-cidade" class="form-control">
+                        </div>
+                        
+                        <div class="form-group small">
+                            <label for="cliente-estado">UF</label>
+                            <select id="cliente-estado" name="cliente-estado" class="form-control">
+                                <option value="">UF</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <!-- Outros estados... -->
+                                <option value="SP">SP</option>
+                                <option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cliente-observacoes">Observações</label>
+                        <textarea id="cliente-observacoes" name="cliente-observacoes" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" id="modal-btn-cancelar-cliente">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-salvar-cliente">Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

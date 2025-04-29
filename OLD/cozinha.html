@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel da Cozinha - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cozinha.css">
+</head>
+<body class="cozinha-body">
+    <div class="app-container cozinha-container">
+        <!-- Header do Painel da Cozinha -->
+        <header class="cozinha-header">
+            <div class="cozinha-logo">
+                <img src="/api/placeholder/100/50" alt="Logo Restaurante Pesqueiro" class="logo">
+                <h1>Cozinha - Recanto Rancho do Peixe</h1>
+            </div>
+            
+            <div class="cozinha-actions">
+                <div class="cozinha-time">
+                    <i class="fas fa-clock"></i>
+                    <span id="current-time">14:32:45</span>
+                </div>
+                <button class="btn btn-success" id="btn-atualizar">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+                <button class="btn btn-primary" id="btn-configuracoes">
+                    <i class="fas fa-cog"></i> Configurações
+                </button>
+                <button class="btn btn-danger" id="btn-voltar">
+                    <i class="fas fa-sign-out-alt"></i> Voltar
+                </button>
+            </div>
+        </header>
+        
+        <!-- Conteúdo Principal -->
+        <main class="cozinha-content">
+            <!-- Tabs de Categorias -->
+            <div class="cozinha-tabs">
+                <button class="cozinha-tab active" data-filter="todos">Todos os Pedidos</button>
+                <button class="cozinha-tab" data-filter="pendentes">Pendentes</button>
+                <button class="cozinha-tab" data-filter="em-preparo">Em Preparo</button>
+                <button class="cozinha-tab" data-filter="prontos">Prontos</button>
+                <button class="cozinha-tab" data-filter="entregues">Entregues</button>
+            </div>
+            
+            <!-- Filtros e Controles -->
+            <div class="cozinha-controls">
+                <div class="cozinha-filter">
+                    <label for="filter-tipo">Filtrar por:</label>
+                    <select id="filter-tipo">
+                        <option value="todos">Todos os tipos</option>
+                        <option value="mesa">Mesa</option>
+                        <option value="viagem">Viagem</option>
+                        <option value="delivery">Delivery</option>
+                    </select>
+                </div>
+                
+                <div class="cozinha-view">
+                    <button class="view-btn active" data-view="cards">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Área de Pedidos -->
+            <div class="pedidos-grid" id="pedidos-container">
+                <!-- Pedido Card 1 -->
+                <div class="pedido-card pendente" data-pedido-id="1254" data-tipo="mesa">
+                    <div class="pedido-header">
+                        <div class="pedido-info">
+                            <span class="pedido-numero">#1254</span>
+                            <span class="pedido-mesa">Mesa 03</span>
+                            <span class="pedido-tempo">14:25 (7 min)</span>
+                        </div>
+                        <div class="pedido-status pendente">Pendente</div>
+                    </div>
+                    
+                    <div class="pedido-body">
+                        <ul class="pedido-itens">
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Peixe Frito</span>
+                                <span class="item-obs">Bem passado, sem cebola</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">2x</span>
+                                <span class="item-nome">Porção de Batatas</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">3x</span>
+                                <span class="item-nome">Refrigerante</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pedido-footer">
+                        <div class="pedido-actions">
+                            <button class="btn-status btn-iniciar" data-pedido="1254" data-action="iniciar">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="btn-status btn-concluir" data-pedido="1254" data-action="concluir">
+                                <i class="fas fa-check"></i> Concluir
+                            </button>
+                            <button class="btn-status btn-entregar" data-pedido="1254" data-action="entregar">
+                                <i class="fas fa-utensils"></i> Entregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pedido Card 2 -->
+                <div class="pedido-card em-preparo" data-pedido-id="1255" data-tipo="delivery">
+                    <div class="pedido-header">
+                        <div class="pedido-info">
+                            <span class="pedido-numero">#1255</span>
+                            <span class="pedido-mesa">Delivery</span>
+                            <span class="pedido-tempo">14:10 (22 min)</span>
+                        </div>
+                        <div class="pedido-status em-preparo">Em Preparo</div>
+                    </div>
+                    
+                    <div class="pedido-body">
+                        <ul class="pedido-itens">
+                            <li class="pedido-item">
+                                <span class="item-qty">2x</span>
+                                <span class="item-nome">Camarão ao Alho</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Arroz</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Salada</span>
+                                <span class="item-obs">Sem tomate</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pedido-footer">
+                        <div class="pedido-actions">
+                            <button class="btn-status btn-iniciar disabled" data-pedido="1255" data-action="iniciar">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="btn-status btn-concluir" data-pedido="1255" data-action="concluir">
+                                <i class="fas fa-check"></i> Concluir
+                            </button>
+                            <button class="btn-status btn-entregar" data-pedido="1255" data-action="entregar">
+                                <i class="fas fa-utensils"></i> Entregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pedido Card 3 -->
+                <div class="pedido-card pronto" data-pedido-id="1252" data-tipo="viagem">
+                    <div class="pedido-header">
+                        <div class="pedido-info">
+                            <span class="pedido-numero">#1252</span>
+                            <span class="pedido-mesa">Viagem</span>
+                            <span class="pedido-tempo">13:45 (47 min)</span>
+                        </div>
+                        <div class="pedido-status pronto">Pronto</div>
+                    </div>
+                    
+                    <div class="pedido-body">
+                        <ul class="pedido-itens">
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Tilápia Grelhada</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Arroz</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Feijão</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pedido-footer">
+                        <div class="pedido-actions">
+                            <button class="btn-status btn-iniciar disabled" data-pedido="1252" data-action="iniciar">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="btn-status btn-concluir disabled" data-pedido="1252" data-action="concluir">
+                                <i class="fas fa-check"></i> Concluir
+                            </button>
+                            <button class="btn-status btn-entregar" data-pedido="1252" data-action="entregar">
+                                <i class="fas fa-utensils"></i> Entregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pedido Card 4 -->
+                <div class="pedido-card entregue" data-pedido-id="1251" data-tipo="mesa">
+                    <div class="pedido-header">
+                        <div class="pedido-info">
+                            <span class="pedido-numero">#1251</span>
+                            <span class="pedido-mesa">Mesa 01</span>
+                            <span class="pedido-tempo">13:30 (1h 2min)</span>
+                        </div>
+                        <div class="pedido-status entregue">Entregue</div>
+                    </div>
+                    
+                    <div class="pedido-body">
+                        <ul class="pedido-itens">
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Pintado na Brasa</span>
+                            </li>
+                            <li class="pedido-item">
+                                <span class="item-qty">1x</span>
+                                <span class="item-nome">Porção de Mandioca</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pedido-footer">
+                        <div class="pedido-actions">
+                            <button class="btn-status btn-iniciar disabled" data-pedido="1251" data-action="iniciar">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="btn-status btn-concluir disabled" data-pedido="1251" data-action="concluir">
+                                <i class="fas fa-check"></i> Concluir
+                            </button>
+                            <button class="btn-status btn-entregar disabled" data-pedido="1251" data-action="entregar">
+                                <i class="fas fa-utensils"></i> Entregue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Barra de Estatísticas -->
+        <footer class="cozinha-footer">
+            <div class="estatisticas">
+                <div class="estat-item">
+                    <span class="estat-label">Pedidos Pendentes:</span>
+                    <span class="estat-valor">3</span>
+                </div>
+                <div class="estat-item">
+                    <span class="estat-label">Em Preparo:</span>
+                    <span class="estat-valor">5</span>
+                </div>
+                <div class="estat-item">
+                    <span class="estat-label">Prontos para Entrega:</span>
+                    <span class="estat-valor">2</span>
+                </div>
+                <div class="estat-item">
+                    <span class="estat-label">Tempo Médio:</span>
+                    <span class="estat-valor">18 min</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="cozinha.js"></script>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ff6d00">
+    <title>Painel da Cozinha - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cozinha.css">
+    <style>
+        /* Critical inline styles for faster loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #eee;
+            border-top: 6px solid #ff6d00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 16px;
+            font-size: 18px;
+            color: #333;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .offline-indicator {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            background-color: #f44336;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body class="cozinha-body">
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Carregando painel da cozinha...</div>
+    </div>
+
+    <!-- Offline indicator -->
+    <div class="offline-indicator" id="offline-indicator">
+        <i class="fas fa-wifi-slash"></i>
+        <span>Modo offline - Sincronizando quando reconectar</span>
+    </div>
+
+    <div class="app-container cozinha-container">
+        <!-- Header do Painel da Cozinha -->
+        <header class="cozinha-header">
+            <div class="cozinha-logo">
+                <img src="/api/placeholder/100/50" alt="Logo Recanto Rancho do Peixe" class="logo">
+                <h1>Painel da Cozinha</h1>
+            </div>
+            
+            <div class="cozinha-actions">
+                <div class="cozinha-time">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                    <span id="current-time">14:32:45</span>
+                </div>
+                <button class="btn btn-success btn-touch" id="btn-atualizar" aria-label="Atualizar pedidos">
+                    <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                    <span>Atualizar</span>
+                </button>
+                <button class="btn btn-primary btn-touch" id="btn-configuracoes" aria-label="Configurações do painel">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span>Configurações</span>
+                </button>
+                <button class="btn btn-danger btn-touch" id="btn-voltar" aria-label="Voltar ao sistema principal">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Voltar</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Conteúdo Principal -->
+        <main class="cozinha-content">
+            <!-- Sistema de Abas de Filtro - Fixed para tablet -->
+            <div class="cozinha-tabs-container" id="tabs-container">
+                <div class="cozinha-tabs" role="tablist">
+                    <button class="cozinha-tab active" data-filter="todos" role="tab" aria-selected="true" aria-controls="tab-todos">
+                        <i class="fas fa-list-ul" aria-hidden="true"></i>
+                        <span>Todos</span>
+                        <span class="tab-counter" id="counter-todos">10</span>
+                    </button>
+                    <button class="cozinha-tab" data-filter="pendente" role="tab" aria-selected="false" aria-controls="tab-pendente">
+                        <i class="fas fa-hourglass-start" aria-hidden="true"></i>
+                        <span>Pendentes</span>
+                        <span class="tab-counter warning" id="counter-pendente">4</span>
+                    </button>
+                    <button class="cozinha-tab" data-filter="em-preparo" role="tab" aria-selected="false" aria-controls="tab-em-preparo">
+                        <i class="fas fa-fire" aria-hidden="true"></i>
+                        <span>Em Preparo</span>
+                        <span class="tab-counter info" id="counter-em-preparo">3</span>
+                    </button>
+                    <button class="cozinha-tab" data-filter="pronto" role="tab" aria-selected="false" aria-controls="tab-pronto">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                        <span>Prontos</span>
+                        <span class="tab-counter success" id="counter-pronto">2</span>
+                    </button>
+                    <button class="cozinha-tab" data-filter="entregue" role="tab" aria-selected="false" aria-controls="tab-entregue">
+                        <i class="fas fa-utensils" aria-hidden="true"></i>
+                        <span>Entregues</span>
+                        <span class="tab-counter muted" id="counter-entregue">1</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros e visualização - Colapsável em tablets -->
+            <div class="filter-panel" id="filter-panel">
+                <button class="filter-toggle-btn" id="filter-toggle" aria-expanded="false" aria-controls="filter-controls">
+                    <i class="fas fa-filter" aria-hidden="true"></i>
+                    <span>Filtros</span>
+                    <i class="fas fa-chevron-down filter-chevron" aria-hidden="true"></i>
+                </button>
+                
+                <div class="filter-controls" id="filter-controls">
+                    <div class="cozinha-filter-group">
+                        <div class="cozinha-filter">
+                            <label for="filter-tipo">Tipo:</label>
+                            <select id="filter-tipo" aria-label="Filtrar por tipo de pedido" class="touch-input">
+                                <option value="todos">Todos os tipos</option>
+                                <option value="mesa">Mesa</option>
+                                <option value="viagem">Viagem</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                        
+                        <div class="cozinha-filter">
+                            <label for="filter-prioridade">Prioridade:</label>
+                            <select id="filter-prioridade" aria-label="Filtrar por prioridade" class="touch-input">
+                                <option value="todos">Todas</option>
+                                <option value="alta">Alta</option>
+                                <option value="normal">Normal</option>
+                                <option value="baixa">Baixa</option>
+                            </select>
+                        </div>
+                        
+                        <div class="cozinha-search">
+                            <input type="search" id="search-pedido" placeholder="Buscar pedido..." 
+                                aria-label="Buscar pedido por número ou item" class="touch-input">
+                            <button id="btn-search" aria-label="Buscar" class="touch-input">
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="cozinha-view-controls">
+                        <span class="view-label">Visualização:</span>
+                        <div class="cozinha-view" role="group" aria-label="Alternar modo de visualização">
+                            <button class="view-btn active" data-view="cards" aria-label="Visualizar como cards" 
+                                aria-pressed="true">
+                                <i class="fas fa-th-large" aria-hidden="true"></i>
+                            </button>
+                            <button class="view-btn" data-view="list" aria-label="Visualizar como lista" 
+                                aria-pressed="false">
+                                <i class="fas fa-list" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="cozinha-sort">
+                            <label for="sort-option">Ordenar:</label>
+                            <select id="sort-option" aria-label="Ordenar pedidos" class="touch-input">
+                                <option value="time-asc">Mais antigos primeiro</option>
+                                <option value="time-desc">Mais recentes primeiro</option>
+                                <option value="priority">Por prioridade</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Área de Pedidos -->
+            <div class="pedidos-container" id="pedidos-container">
+                <!-- Contém o conteúdo dos pedidos -->
+                <div class="tab-content active" id="tab-todos">
+                    <div class="pedidos-grid">
+                        <!-- Pedido Pendente - Alta Prioridade -->
+                        <div class="pedido-card pendente high-priority" data-pedido-id="1258" 
+                            data-tipo="mesa" data-prioridade="alta" data-tempo="10">
+                            <div class="priority-indicator" aria-label="Alta prioridade">
+                                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                            </div>
+                            
+                            <div class="pedido-header">
+                                <div class="pedido-info">
+                                    <span class="pedido-numero">#1258</span>
+                                    <span class="pedido-mesa">Mesa 05</span>
+                                    <div class="pedido-tempo warning" aria-label="Pedido aguardando há 10 minutos">
+                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                        <span class="tempo-valor">10 min</span>
+                                    </div>
+                                </div>
+                                <div class="pedido-status pendente">Pendente</div>
+                            </div>
+                            
+                            <div class="pedido-body">
+                                <ul class="pedido-itens">
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">2x</span>
+                                            <span class="item-nome">Peixe Frito</span>
+                                        </div>
+                                        <div class="item-obs">Bem passado, sem cebola</div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Camarão na Moranga</span>
+                                        </div>
+                                        <div class="item-obs">Pouco picante, sem camarão pequeno</div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">3x</span>
+                                            <span class="item-nome">Arroz</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <div class="pedido-notas">
+                                    <i class="fas fa-sticky-note" aria-hidden="true"></i>
+                                    <span>Cliente alérgico a pimenta</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pedido-footer">
+                                <div class="pedido-garcom">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    <span>Garçom: Carlos</span>
+                                </div>
+                                
+                                <div class="pedido-actions">
+                                    <div class="action-swipe-area">
+                                        <button class="btn-status btn-iniciar swipe-btn" data-pedido="1258" data-action="iniciar">
+                                            <i class="fas fa-play" aria-hidden="true"></i>
+                                            <span>Iniciar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pedido Em Preparo -->
+                        <div class="pedido-card em-preparo" data-pedido-id="1255" 
+                            data-tipo="delivery" data-prioridade="normal" data-tempo="22">
+                            <div class="pedido-header">
+                                <div class="pedido-info">
+                                    <span class="pedido-numero">#1255</span>
+                                    <span class="pedido-mesa delivery">
+                                        <i class="fas fa-motorcycle" aria-hidden="true"></i> Delivery
+                                    </span>
+                                    <div class="pedido-tempo warning" aria-label="Pedido em preparo há 22 minutos">
+                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                        <span class="tempo-valor">22 min</span>
+                                    </div>
+                                </div>
+                                <div class="pedido-status em-preparo">Em Preparo</div>
+                            </div>
+                            
+                            <div class="pedido-body">
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="progress-text">50% concluído</div>
+                                </div>
+                                
+                                <ul class="pedido-itens">
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">2x</span>
+                                            <span class="item-nome">Camarão ao Alho</span>
+                                        </div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Arroz</span>
+                                        </div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Salada</span>
+                                        </div>
+                                        <div class="item-obs">Sem tomate</div>
+                                    </li>
+                                </ul>
+                                
+                                <div class="cook-assigned">
+                                    <i class="fas fa-user-chef" aria-hidden="true"></i>
+                                    <span>Chef: Antônio</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pedido-footer">
+                                <div class="pedido-timer" aria-label="Tempo estimado restante">
+                                    <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+                                    <span>Estimado: 10 min restantes</span>
+                                </div>
+                                
+                                <div class="pedido-actions">
+                                    <div class="action-swipe-area">
+                                        <button class="btn-status btn-concluir swipe-btn" data-pedido="1255" data-action="concluir">
+                                            <i class="fas fa-check" aria-hidden="true"></i>
+                                            <span>Concluir</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pedido Pronto -->
+                        <div class="pedido-card pronto" data-pedido-id="1252" 
+                            data-tipo="viagem" data-prioridade="baixa" data-tempo="47">
+                            <div class="pedido-header">
+                                <div class="pedido-info">
+                                    <span class="pedido-numero">#1252</span>
+                                    <span class="pedido-mesa viagem">
+                                        <i class="fas fa-shopping-bag" aria-hidden="true"></i> Viagem
+                                    </span>
+                                    <div class="pedido-tempo" aria-label="Pedido pronto há 5 minutos">
+                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                        <span class="tempo-valor">Pronto há 5 min</span>
+                                    </div>
+                                </div>
+                                <div class="pedido-status pronto">Pronto</div>
+                            </div>
+                            
+                            <div class="pedido-body">
+                                <div class="ready-indicator">
+                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                    <span>Pronto para entrega!</span>
+                                </div>
+                                
+                                <ul class="pedido-itens">
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Tilápia Grelhada</span>
+                                        </div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Arroz</span>
+                                        </div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Feijão</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="pedido-footer">
+                                <div class="pedido-cliente">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                    <span>Cliente: Maria Silva</span>
+                                </div>
+                                
+                                <div class="pedido-actions">
+                                    <div class="action-swipe-area">
+                                        <button class="btn-status btn-entregar swipe-btn" data-pedido="1252" data-action="entregar">
+                                            <i class="fas fa-utensils" aria-hidden="true"></i>
+                                            <span>Entregar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pedido Entregue -->
+                        <div class="pedido-card entregue" data-pedido-id="1251" 
+                            data-tipo="mesa" data-prioridade="normal" data-tempo="62">
+                            <div class="pedido-header">
+                                <div class="pedido-info">
+                                    <span class="pedido-numero">#1251</span>
+                                    <span class="pedido-mesa">Mesa 01</span>
+                                    <div class="pedido-tempo" aria-label="Pedido entregue há 10 minutos">
+                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                        <span class="tempo-valor">Entregue 14:20</span>
+                                    </div>
+                                </div>
+                                <div class="pedido-status entregue">Entregue</div>
+                            </div>
+                            
+                            <div class="pedido-body">
+                                <div class="delivered-indicator">
+                                    <i class="fas fa-check-double" aria-hidden="true"></i>
+                                    <span>Pedido entregue com sucesso</span>
+                                </div>
+                                
+                                <ul class="pedido-itens collapsed">
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Pintado na Brasa</span>
+                                        </div>
+                                    </li>
+                                    <li class="pedido-item">
+                                        <div class="item-header">
+                                            <span class="item-qty">1x</span>
+                                            <span class="item-nome">Porção de Mandioca</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <button class="btn-expand">
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                    <span>Mostrar mais</span>
+                                </button>
+                            </div>
+                            
+                            <div class="pedido-footer">
+                                <div class="pedido-timestamps">
+                                    <div class="timestamp"><i class="fas fa-clock" aria-hidden="true"></i> Recebido: 13:30</div>
+                                    <div class="timestamp"><i class="fas fa-fire" aria-hidden="true"></i> Iniciado: 13:35</div>
+                                    <div class="timestamp"><i class="fas fa-check" aria-hidden="true"></i> Concluído: 14:10</div>
+                                    <div class="timestamp"><i class="fas fa-utensils" aria-hidden="true"></i> Entregue: 14:20</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de rolagem para o topo - util em tablets -->
+            <button id="scroll-to-top" class="scroll-to-top" aria-label="Voltar ao topo">
+                <i class="fas fa-arrow-up" aria-hidden="true"></i>
+            </button>
+        </main>
+        
+        <!-- Barra de Estatísticas - Fixed no rodapé para acesso rápido -->
+        <footer class="cozinha-footer">
+            <div class="estatisticas">
+                <div class="estat-item touch-target">
+                    <i class="fas fa-hourglass-start" aria-hidden="true"></i>
+                    <span class="estat-label">Pendentes:</span>
+                    <span class="estat-valor">4</span>
+                </div>
+                <div class="estat-item touch-target">
+                    <i class="fas fa-fire" aria-hidden="true"></i>
+                    <span class="estat-label">Em Preparo:</span>
+                    <span class="estat-valor">3</span>
+                </div>
+                <div class="estat-item touch-target">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    <span class="estat-label">Prontos:</span>
+                    <span class="estat-valor">2</span>
+                </div>
+                <div class="estat-item touch-target" id="average-time">
+                    <i class="fas fa-chart-line" aria-hidden="true"></i>
+                    <span class="estat-label">Tempo Médio:</span>
+                    <span class="estat-valor">18 min</span>
+                </div>
+            </div>
+            
+            <div class="cozinha-footer-actions">
+                <button class="btn btn-secondary btn-touch" id="btn-relatorio" aria-label="Ver relatório completo">
+                    <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                    <span>Relatório</span>
+                </button>
+                <button class="btn btn-primary btn-touch" id="btn-imprimir" aria-label="Imprimir pedidos">
+                    <i class="fas fa-print" aria-hidden="true"></i>
+                    <span>Imprimir</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notificações de gestos - aparecem na primeira utilização -->
+    <div class="gesture-guide" id="swipe-guide">
+        <div class="gesture-content">
+            <div class="gesture-icon">
+                <i class="fas fa-hand-point-up" aria-hidden="true"></i>
+                <i class="fas fa-arrow-right gesture-arrow" aria-hidden="true"></i>
+            </div>
+            <p>Deslize para a direita para concluir a ação</p>
+            <button class="btn-dismiss">Entendi</button>
+        </div>
+    </div>
+
+    <!-- Templates para novos pedidos (usado pelo JavaScript) -->
+    <template id="template-pedido">
+        <div class="pedido-card" data-pedido-id="" data-tipo="" data-prioridade="" data-tempo="">
+            <div class="pedido-header">
+                <div class="pedido-info">
+                    <span class="pedido-numero"></span>
+                    <span class="pedido-mesa"></span>
+                    <div class="pedido-tempo">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <span class="tempo-valor"></span>
+                    </div>
+                </div>
+                <div class="pedido-status"></div>
+            </div>
+            
+            <div class="pedido-body">
+                <ul class="pedido-itens"></ul>
+            </div>
+            
+            <div class="pedido-footer">
+                <div class="pedido-garcom"></div>
+                
+                <div class="pedido-actions">
+                    <div class="action-swipe-area">
+                        <button class="btn-status swipe-btn" data-action="">
+                            <i class="fas" aria-hidden="true"></i>
+                            <span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-item">
+        <li class="pedido-item">
+            <div class="item-header">
+                <span class="item-qty"></span>
+                <span class="item-nome"></span>
+            </div>
+            <div class="item-obs"></div>
+        </li>
+    </template>
+
+    <!-- Modal de Detalhes do Pedido -->
+    <div class="modal-overlay" id="modal-overlay" aria-hidden="true"></div>
+    
+    <div class="modal tablet-modal" id="modal-detalhes-pedido" aria-labelledby="modal-title" aria-hidden="true" role="dialog">
+        <div class="modal-header">
+            <h2 id="modal-title">Detalhes do Pedido #1258</h2>
+            <button class="modal-close touch-target" aria-label="Fechar">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Será preenchido via JavaScript -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-lg btn-secondary modal-close-btn">Fechar</button>
+            <button class="btn btn-lg btn-primary" id="modal-action-btn">Atualizar Status</button>
+        </div>
+    </div>
+
+    <!-- Modal de Configurações -->
+    <div class="modal tablet-modal" id="modal-configuracoes" aria-labelledby="modal-config-title" aria-hidden="true" role="dialog">
+        <div class="modal-header">
+            <h2 id="modal-config-title">Configurações do Painel</h2>
+            <button class="modal-close touch-target" aria-label="Fechar">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="config-section">
+                <h3>Interface</h3>
+                <div class="config-option">
+                    <label class="switch-label">
+                        <span>Modo escuro</span>
+                        <div class="switch">
+                            <input type="checkbox" id="dark-mode-toggle">
+                            <span class="slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="config-option">
+                    <label class="switch-label">
+                        <span>Som de notificações</span>
+                        <div class="switch">
+                            <input type="checkbox" id="sound-toggle" checked>
+                            <span class="slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="config-option">
+                    <label class="switch-label">
+                        <span>Alertas visuais</span>
+                        <div class="switch">
+                            <input type="checkbox" id="alerts-toggle" checked>
+                            <span class="slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="config-option">
+                    <label for="font-size">Tamanho da fonte</label>
+                    <select id="font-size" class="touch-input">
+                        <option value="small">Pequena</option>
+                        <option value="medium" selected>Média</option>
+                        <option value="large">Grande</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Alertas</h3>
+                <div class="config-option">
+                    <label for="alert-time">Alerta de tempo (minutos)</label>
+                    <input type="number" id="alert-time" min="5" max="60" value="20" class="touch-input">
+                </div>
+                <div class="config-option">
+                    <label for="critical-time">Tempo crítico (minutos)</label>
+                    <input type="number" id="critical-time" min="10" max="90" value="40" class="touch-input">
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>Cozinheiros</h3>
+                <div class="chef-list">
+                    <div class="chef-item">
+                        <span>Antônio</span>
+                        <span class="chef-status active">Ativo</span>
+                    </div>
+                    <div class="chef-item">
+                        <span>Márcia</span>
+                        <span class="chef-status active">Ativa</span>
+                    </div>
+                    <div class="chef-item">
+                        <span>Pedro</span>
+                        <span class="chef-status">Ausente</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-edit-chefs">
+                    <i class="fas fa-edit" aria-hidden="true"></i> Editar Cozinheiros
+                </button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-lg btn-secondary modal-close-btn">Cancelar</button>
+            <button class="btn btn-lg btn-primary" id="btn-save-config">Salvar Configurações</button>
+        </div>
+    </div>
+
+    <!-- Área para notificações -->
+    <div class="notifications-container" aria-live="polite" id="notifications-container"></div>
+
+    <!-- Script para detecção de conexão -->
+    <script>
+        // Verificar conectividade
+        function updateOnlineStatus() {
+            const offlineIndicator = document.getElementById('offline-indicator');
+            if (!navigator.onLine) {
+                offlineIndicator.style.display = 'flex';
+            } else {
+                offlineIndicator.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // Remove loading overlay após carregar
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            setTimeout(() => {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 300);
+            }, 500);
+            
+            // Verificar conectividade inicial
+            updateOnlineStatus();
+        });
+    </script>
+
+    <!-- JavaScript principal -->
+    <script src="cozinha.js"></script>
+</body>
+</html>

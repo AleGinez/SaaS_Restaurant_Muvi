@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Recanto Rancho do Peixe</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2e86c1;
+            --accent: #f39c12;
+            --light: #eef7fb;
+            --dark: #1c2833;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --warning: #f1c40f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(28, 40, 51, 0.8);
+            z-index: 1;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 900px;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .login-image {
+            flex: 1;
+            background-image: url('https://images.unsplash.com/photo-1579818276819-22921185b2b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: none;
+        }
+        
+        .login-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 82, 118, 0.9) 0%, rgba(243, 156, 18, 0.7) 100%);
+        }
+        
+        .login-info {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: white;
+            z-index: 2;
+        }
+        
+        .login-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-info p {
+            font-size: 1rem;
+            max-width: 80%;
+        }
+        
+        .login-form {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+        
+        .login-title h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .login-title p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.2);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #154360;
+        }
+        
+        .login-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .login-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* Animação */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-form {
+            animation: fadeIn 0.8s forwards;
+        }
+        
+        /* Responsivo */
+        @media (min-width: 768px) {
+            .login-image {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-image">
+            <div class="login-info">
+                <h2>Bem-vindo ao Recanto Rancho do Peixe</h2>
+                <p>Sistema de gerenciamento completo para o seu restaurante</p>
+            </div>
+        </div>
+        <div class="login-form">
+            <div class="login-header">
+                <span class="logo-icon">🐟</span>
+                <div class="login-title">
+                    <h1>Recanto Rancho do Peixe</h1>
+                    <p>Acesse o sistema para começar</p>
+                </div>
+            </div>
+            
+            <div id="loginAlert" class="alert alert-danger">
+                Usuário ou senha incorretos. Por favor, tente novamente.
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="username" name="username" placeholder="Digite seu nome de usuário" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Lembrar-me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+            
+            <div class="login-footer">
+                <p>© 2025 Recanto Rancho do Peixe. Todos os direitos reservados.</p>
+                <p>Precisa de ajuda? <a href="#">Suporte técnico</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Selecionar elementos
+            const loginForm = document.getElementById('loginForm');
+            const loginAlert = document.getElementById('loginAlert');
+            
+            // Adicionar evento para envio do formulário
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Obter valores do formulário
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Função para validar login
+                validateLogin(username, password);
+            });
+            
+            // Função para validar login (simulação)
+            function validateLogin(username, password) {
+                // Simulação simples - apenas para demonstração
+                // Em ambiente real, isso seria substituído por uma solicitação AJAX ao servidor
+                
+                // Credenciais para teste
+                if (username === 'admin' && password === 'admin123') {
+                    // Login bem-sucedido
+                    showSuccessMessage();
+                    
+                    // Redirecionar para a página principal após um breve atraso
+                    setTimeout(function() {
+                        window.location.href = 'index.html'; // Redirecionando para main.html em vez de index.html
+                    }, 1500);
+                } else {
+                    // Login falhou
+                    showErrorMessage();
+                }
+            }
+            
+            // Função para mostrar mensagem de erro
+            function showErrorMessage() {
+                loginAlert.textContent = 'Usuário ou senha incorretos. Por favor, tente novamente.';
+                loginAlert.className = 'alert alert-danger';
+                loginAlert.style.display = 'block';
+                
+                // Esconder a mensagem após 3 segundos
+                setTimeout(function() {
+                    loginAlert.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Função para mostrar mensagem de sucesso
+            function showSuccessMessage() {
+                loginAlert.textContent = 'Login bem-sucedido! Redirecionando...';
+                loginAlert.className = 'alert alert-success';
+                loginAlert.style.display = 'block';
+            }
+            
+            /* 
+            ======================================================
+            CÓDIGO PARA FUTURA INTEGRAÇÃO COM BANCO DE DADOS MYSQL
+            ======================================================
+            
+            // Função para validar login com banco de dados MySQL
+            function validateLoginWithDatabase(username, password) {
+                // Criar objeto XMLHttpRequest
+                const xhr = new XMLHttpRequest();
+                
+                // Configurar a solicitação
+                xhr.open('POST', 'validate_login.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                
+                // Configurar a função de callback
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        
+                        if (response.success) {
+                            // Login bem-sucedido
+                            showSuccessMessage();
+                            
+                            // Armazenar informações do usuário (se necessário)
+                            localStorage.setItem('user', JSON.stringify(response.user));
+                            
+                            // Redirecionar para a página inicial após um breve atraso
+                            setTimeout(function() {
+                                window.location.href = 'main.html'; // Alterado para main.html
+                            }, 1500);
+                        } else {
+                            // Login falhou
+                            showErrorMessage();
+                        }
+                    } else {
+                        // Erro na solicitação
+                        loginAlert.textContent = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
+                        loginAlert.className = 'alert alert-danger';
+                        loginAlert.style.display = 'block';
+                    }
+                };
+                
+                // Lidar com erros de rede
+                xhr.onerror = function() {
+                    loginAlert.textContent = 'Erro de conexão. Verifique sua internet.';
+                    loginAlert.className = 'alert alert-danger';
+                    loginAlert.style.display = 'block';
+                };
+                
+                // Enviar a solicitação com os dados do formulário
+                const data = 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
+                xhr.send(data);
+            }
+            
+            // Código PHP para validate_login.php:
+            /*
+            <?php
+            // Configurações de conexão com o banco de dados
+            $host = 'localhost';
+            $dbname = 'recanto_peixe';
+            $dbuser = 'root';
+            $dbpass = '';
+            
+            // Inicializar a resposta
+            $response = array('success' => false);
+            
+            // Verificar se a solicitação é do tipo POST
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // Obter os dados do formulário
+                $username = isset($_POST['username']) ? $_POST['username'] : '';
+                $password = isset($_POST['password']) ? $_POST['password'] : '';
+                
+                // Validar entrada
+                if (!empty($username) && !empty($password)) {
+                    try {
+                        // Conectar ao banco de dados
+                        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        
+                        // Preparar a consulta SQL
+                        $stmt = $pdo->prepare("SELECT id, nome, perfil, senha FROM usuarios WHERE usuario = :username LIMIT 1");
+                        $stmt->bindParam(':username', $username);
+                        $stmt->execute();
+                        
+                        // Verificar se o usuário existe
+                        if ($stmt->rowCount() > 0) {
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            // Verificar a senha
+                            // Em produção, use password_verify() para senhas com hash
+                            // if (password_verify($password, $user['senha'])) {
+                            if ($password === $user['senha']) {  // Isso é apenas para demonstração, use hash em produção!
+                                // Login bem-sucedido
+                                $response['success'] = true;
+                                
+                                // Remover a senha antes de enviar dados do usuário
+                                unset($user['senha']);
+                                $response['user'] = $user;
+                                
+                                // Iniciar a sessão e armazenar dados do usuário
+                                session_start();
+                                $_SESSION['user_id'] = $user['id'];
+                                $_SESSION['user_name'] = $user['nome'];
+                                $_SESSION['user_perfil'] = $user['perfil'];
+                            }
+                        }
+                    } catch (PDOException $e) {
+                        // Erro na conexão com o banco de dados
+                        $response['error'] = 'Erro de banco de dados: ' . $e->getMessage();
+                    }
+                }
+            }
+            
+            // Enviar a resposta como JSON
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            ?>
+            */
+            
+            // Estrutura da Tabela SQL:
+            /*
+            CREATE TABLE usuarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario VARCHAR(50) NOT NULL UNIQUE,
+                senha VARCHAR(255) NOT NULL,
+                nome VARCHAR(100) NOT NULL,
+                email VARCHAR(100) NOT NULL,
+                perfil ENUM('admin', 'gerente', 'garcom', 'cozinha', 'caixa') NOT NULL,
+                status TINYINT(1) DEFAULT 1,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
+            
+            -- Inserir um usuário admin de exemplo
+            INSERT INTO usuarios (usuario, senha, nome, email, perfil) 
+            VALUES ('admin', 'admin123', 'Administrador', 'admin@ranchopeixe.com', 'admin');
+            */
+            
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1612 @@
+/* Estilos Globais */
+:root {
+    --primary-color: #1e88e5;
+    --primary-dark: #1565c0;
+    --primary-light: #64b5f6;
+    --secondary-color: #00897b;
+    --accent-color: #ff8f00;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --bg-light: #f5f5f5;
+    --bg-white: #ffffff;
+    --border-color: #e0e0e0;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --error-color: #f44336;
+    --info-color: #2196f3;
+    --cozinha-color: #f4511e; /* Nova cor para a seção de cozinha */
+    --cozinha-light: #ff8a65; /* Versão clara da cor da cozinha */
+    --cozinha-dark: #d84315; /* Versão escura da cor da cozinha */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --shadow-md: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --shadow-lg: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    --sidebar-width: 260px;
+    --sidebar-width-collapsed: 80px;
+    --header-height: 60px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+}
+
+/* Layout Principal */
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar / Menu Lateral */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100%;
+    background-color: var(--bg-white);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+}
+
+.sidebar-collapsed {
+    width: var(--sidebar-width-collapsed);
+}
+
+.sidebar-header {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+    margin-top: 8px;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.logo {
+    height: 50px;
+    object-fit: contain;
+}
+
+.user-info {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.main-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 0;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-item a {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.menu-item a i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.menu-item:hover a, 
+.menu-item.active a {
+    color: var(--primary-color);
+    background-color: rgba(30, 136, 229, 0.05);
+}
+
+.menu-item.active a {
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Estilos específicos para o menu da Cozinha */
+.menu-item a[href="#cozinha"] i {
+    color: var(--cozinha-color);
+}
+
+.menu-item:hover a[href="#cozinha"], 
+.menu-item.active a[href="#cozinha"] {
+    color: var(--cozinha-color);
+    background-color: rgba(244, 81, 30, 0.05);
+}
+
+.menu-item.active a[href="#cozinha"] {
+    border-left: 3px solid var(--cozinha-color);
+}
+
+.menu-item a[href="#cozinha"] + .submenu li.active a {
+    background-color: rgba(244, 81, 30, 0.1);
+    color: var(--cozinha-color);
+    border-left: 3px solid var(--cozinha-color);
+}
+
+.submenu-arrow {
+    margin-left: auto !important;
+    font-size: 0.8rem !important;
+    transition: var(--transition);
+}
+
+.has-submenu.open .submenu-arrow {
+    transform: rotate(180deg);
+}
+
+.submenu {
+    background-color: rgba(30, 136, 229, 0.03);
+    overflow: hidden;
+    max-height: 0;
+    transition: var(--transition);
+}
+
+.has-submenu.open .submenu {
+    max-height: 400px; /* Aumentado de 300px para comportar mais itens */
+    overflow-y: auto; /* Adiciona scroll se ficar muito grande */
+}
+
+/* Estilo para scroll interno do submenu */
+.submenu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.submenu::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.submenu::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+
+.submenu a {
+    padding-left: 48px;
+    font-size: 0.9rem;
+}
+
+/* Melhoria para hover dos itens de submenu */
+.submenu a:hover {
+    background-color: rgba(30, 136, 229, 0.08);
+    padding-left: 52px; /* Empurra um pouco mais à direita no hover */
+    transition: all 0.2s ease;
+}
+
+/* Estilo para destacar o item de submenu ativo */
+.submenu li.active a {
+    background-color: rgba(30, 136, 229, 0.1);
+    color: var(--primary-color);
+    font-weight: 500;
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Melhoria na estilização dos ícones dos novos itens de menu */
+.menu-item a i.fas.fa-book-open,
+.menu-item a i.fas.fa-chart-bar,
+.menu-item a i.fas.fa-user-friends {
+    font-size: 0.9rem; /* Levemente menor para ícones específicos */
+}
+
+/* Estilo específico para ícone de fogo (cozinha) */
+.menu-item a i.fas.fa-fire {
+    font-size: 1.1rem;
+    color: var(--cozinha-color);
+}
+
+.sidebar-footer {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer a {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.sidebar-footer a i {
+    margin-right: 8px;
+}
+
+/* Destaque para item de menu principal quando está ativo */
+.menu-item.highlighted-section > a {
+    background-color: rgba(30, 136, 229, 0.1);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.top-header {
+    height: var(--header-height);
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
+}
+
+.menu-toggle {
+    margin-right: 16px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.menu-toggle i {
+    font-size: 1.3rem;
+}
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+}
+
+.search-bar i {
+    color: var(--text-secondary);
+    margin-right: 8px;
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.notifications {
+    position: relative;
+    margin-right: 16px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.notifications i {
+    font-size: 1.2rem;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--error-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.action-btn {
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.action-btn i {
+    margin-right: 8px;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.breadcrumb {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Cards de Resumo */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 1.5rem;
+}
+
+.card:nth-child(1) .card-icon {
+    background-color: rgba(30, 136, 229, 0.1);
+    color: var(--primary-color);
+}
+
+.card:nth-child(2) .card-icon {
+    background-color: rgba(0, 137, 123, 0.1);
+    color: var(--secondary-color);
+}
+
+.card:nth-child(3) .card-icon {
+    background-color: rgba(255, 143, 0, 0.1);
+    color: var(--accent-color);
+}
+
+.card:nth-child(4) .card-icon {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--error-color);
+}
+
+/* Estilo para o card de Pedidos em Preparo (cozinha) */
+.card.cozinha .card-icon {
+    background-color: rgba(244, 81, 30, 0.1);
+    color: var(--cozinha-color);
+}
+
+.card-info {
+    flex: 1;
+}
+
+.card-info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+}
+
+.card-numbers {
+    display: flex;
+    align-items: baseline;
+}
+
+.number {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 8px;
+}
+
+.status {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Seção Mesas */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Botão específico para ações da cozinha */
+.btn.cozinha {
+    background-color: var(--cozinha-color);
+}
+
+.btn.cozinha:hover {
+    background-color: var(--cozinha-dark);
+}
+
+.mesas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.mesa {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    cursor: pointer;
+    border-left: 4px solid transparent;
+}
+
+.mesa:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.mesa-number {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.mesa-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.mesa-info {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.mesa.livre {
+    border-left-color: var(--success-color);
+}
+
+.mesa.livre .mesa-status {
+    color: var(--success-color);
+}
+
+.mesa.ocupada {
+    border-left-color: var(--error-color);
+}
+
+.mesa.ocupada .mesa-status {
+    color: var(--error-color);
+}
+
+.mesa.reservada {
+    border-left-color: var(--warning-color);
+}
+
+.mesa.reservada .mesa-status {
+    color: var(--warning-color);
+}
+
+/* Tabela de Dados */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 30px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background-color: var(--bg-light);
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.data-table tbody tr:hover {
+    background-color: rgba(30, 136, 229, 0.03);
+}
+
+.data-table .action-btn {
+    background-color: transparent;
+    color: var(--text-secondary);
+    padding: 4px;
+    margin-right: 4px;
+}
+
+.data-table .action-btn:hover {
+    color: var(--primary-color);
+    background-color: rgba(30, 136, 229, 0.1);
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.status.em-preparo {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: var(--warning-color);
+}
+
+.status.servido {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: var(--info-color);
+}
+
+.status.fechado {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success-color);
+}
+
+/* Status adicionais para a cozinha */
+.status.pendente {
+    background-color: rgba(244, 81, 30, 0.1);
+    color: var(--cozinha-color);
+}
+
+.status.pronto {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success-color);
+}
+
+/* Alertas de Estoque */
+.alertas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.alerta-card {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.alerta-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--error-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 1.3rem;
+}
+
+.alerta-content {
+    flex: 1;
+}
+
+.alerta-content h4 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.alerta-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.btn-small {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    transition: var(--transition);
+}
+
+.btn-small:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Botão específico para ações da cozinha */
+.btn-small.cozinha {
+    background-color: var(--cozinha-color);
+}
+
+.btn-small.cozinha:hover {
+    background-color: var(--cozinha-dark);
+}
+
+/* Estilos para o Formulário de Pedidos */
+
+/* Card e Seções */
+.form-section {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* Elementos de Formulário */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px 16px;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+    padding: 0 10px;
+    margin-bottom: 16px;
+}
+
+.form-group-lg {
+    flex: 2;
+    min-width: 300px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+    outline: none;
+}
+
+.form-group input[readonly],
+.form-group select[readonly],
+.form-group textarea[readonly] {
+    background-color: var(--bg-light);
+    cursor: not-allowed;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+}
+
+.input-with-icon input {
+    padding-right: 40px;
+}
+
+.icon-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-button:hover {
+    color: var(--primary-color);
+}
+
+.btn-bottom {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Botões */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    color: white;
+    background-color: var(--primary-color);
+}
+
+.btn i {
+    margin-right: 8px;
+    font-size: 0.9em;
+}
+
+.btn:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background-color: #757575;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #616161;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #388e3c;
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #1976d2;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #f57c00;
+}
+
+.btn-danger {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* Mapa de Mesas */
+.mapa-areas {
+    display: flex;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.area-btn {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-light);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.area-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.mapa-container {
+    padding: 20px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+}
+
+.mesa {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    position: relative;
+}
+
+.mesa:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.mesa.selected {
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.mesa-number {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.mesa-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.mesa-info {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* Tabs */
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tab-header {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Tabs especiais para a cozinha */
+.tab-btn.cozinha.active {
+    color: var(--cozinha-color);
+    border-bottom-color: var(--cozinha-color);
+}
+
+.tab-content {
+    padding: 10px 0;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* Categorias e Produtos Rápidos */
+.categoria-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.categoria-btn {
+    padding: 8px 15px;
+    background-color: var(--bg-light);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.categoria-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.produtos-rapidos {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+}
+
+.produtos-rapidos h4 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.produtos-rapidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.produto-rapido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    background-color: white;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.produto-rapido:hover {
+    background-color: var(--primary-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.produto-rapido i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.produto-rapido span {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+/* Totais e pagamento */
+.totais-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.totais-resumo {
+    background-color: var(--bg-light);
+    padding: 20px;
+    border-radius: var(--radius-md);
+}
+
+.resumo-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.resumo-item.total {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+/* Ações do Formulário */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+/* Modais */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.opcoes-container {
+    margin-top: 20px;
+}
+
+.opcoes-container h4 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* Estilos para quantidade na tabela de itens */
+.btn-qty {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--bg-light);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-qty:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.quantidade-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-obs {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Estilos para o indicador de carregamento */
+#loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Estilos para mensagens de erro */
+.error-message {
+    text-align: center;
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 500px;
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.error-message h2 {
+    color: var(--error-color);
+    margin-bottom: 15px;
+}
+
+.error-message p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+/* Estilos para conteúdo carregado dinamicamente */
+.content-fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para a notificação de cozinha */
+.notification-item.kitchen {
+    border-left: 3px solid var(--cozinha-color);
+    background-color: rgba(244, 81, 30, 0.05);
+}
+
+.notification-item.kitchen .notification-content h5 {
+    color: var(--cozinha-color);
+}
+
+/* Utilidades */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Estilos Responsivos */
+@media (max-width: 1200px) {
+    .totais-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        width: 100%;
+    }
+    
+    /* Opcionalmente: melhoria para destacar melhor submenus ativos em telas menores */
+    .has-submenu.open .submenu {
+        border-left: 2px solid var(--primary-light);
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 9;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .mesas-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .alertas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-area {
+        padding: 16px;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .mesas-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .produtos-rapidos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .top-header {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+    }
+    
+    .search-bar {
+        order: 3;
+        margin-top: 10px;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .header-actions {
+        margin-left: 16px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-actions {
+        margin-top: 8px;
+    }
+
+    .mesa {
+        padding: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 12px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .modal {
+        width: 95%;
+    }
+}
+
+/* Customizações para scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Classes para o dropdown de notificações */
+.notifications-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 320px;
+    background-color: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dropdown-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-header h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.dropdown-content {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background-color: var(--bg-light);
+}
+
+.notification-item.unread {
+    background-color: rgba(30, 136, 229, 0.05);
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-content h5 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+}
+
+.notification-content p {
+    margin: 0 0 4px 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.notification-content .time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.mark-read {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.mark-read:hover {
+    background-color: rgba(30, 136, 229, 0.1);
+}
+
+.dropdown-footer {
+    padding: 8px 16px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.dropdown-footer a {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.clear-all {
+    background: none;
+    border: none;
+    color: var(--error-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+}

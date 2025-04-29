@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de pedidos para Recanto Rancho do Peixe">
+    <title>Novo Pedido - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="pedidos.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal -->
+        <aside class="sidebar" aria-label="Menu principal">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/150/80" alt="Logo Recanto Rancho do Peixe" class="logo">
+                <h2>Recanto Rancho do Peixe</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Foto do usuário" class="user-avatar">
+                <div class="user-details">
+                    <span class="user-name">Paulo Palazi</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a href="#" data-page="dashboard">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu active open">
+                        <button class="submenu-toggle" aria-expanded="true" aria-controls="submenu-pedidos">
+                            <i class="fas fa-utensils" aria-hidden="true"></i>
+                            <span>Pedidos</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-pedidos">
+                            <li class="active"><a href="#" data-page="pedidos">Novos Pedidos</a></li>
+                            <li><a href="#" data-page="pedidos-mesa">Pedidos de Mesa</a></li>
+                            <li><a href="#" data-page="pedidos-viagem">Pedidos para Viagem</a></li>
+                            <li><a href="#" data-page="pedidos-delivery">Pedidos de Delivery</a></li>
+                            <li><a href="#" data-page="pedidos-andamento">Pedidos em Andamento</a></li>
+                            <li><a href="#" data-page="historico-pedidos">Histórico de Pedidos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Cozinha -->
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-cozinha">
+                            <i class="fas fa-fire" aria-hidden="true"></i>
+                            <span>Cozinha</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-cozinha">
+                            <li><a href="#" data-page="painel-cozinha">Painel da Cozinha</a></li>
+                            <li><a href="#" data-page="fila-pedidos">Fila de Pedidos</a></li>
+                            <li><a href="#" data-page="pedidos-prontos">Pedidos Prontos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Cardápio -->
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-cardapio">
+                            <i class="fas fa-book-open" aria-hidden="true"></i>
+                            <span>Cardápio</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-cardapio">
+                            <li><a href="#" data-page="cardapio-itens">Itens do Cardápio</a></li>
+                            <li><a href="#" data-page="cardapio-categorias">Categorias</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Mesas -->
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-mesas">
+                            <i class="fas fa-chair" aria-hidden="true"></i>
+                            <span>Mesas</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-mesas">
+                            <li><a href="#" data-page="mesas-layout">Layout</a></li>
+                            <li><a href="#" data-page="mesas-reservas">Reservas</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Clientes -->
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-clientes">
+                            <i class="fas fa-user-friends" aria-hidden="true"></i>
+                            <span>Clientes</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-clientes">
+                            <li><a href="#" data-page="clientes-lista">Lista de Clientes</a></li>
+                            <li><a href="#" data-page="clientes-novo">Novo Cliente</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#suporte" aria-label="Suporte">
+                    <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    <span>Suporte</span>
+                </a>
+                <a href="#sair" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" aria-label="Toggle sidebar menu">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                
+                <div class="search-bar">
+                    <label for="global-search" class="sr-only">Pesquisar</label>
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="global-search" placeholder="Pesquisar pedidos, produtos, mesas...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications" aria-label="3 notificações">
+                        <i class="fas fa-bell" aria-hidden="true"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="btn-cliente-rapido">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i>
+                        <span>Cliente Rápido</span>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <section class="page-header">
+                    <div class="page-title-area">
+                        <h1>Novo Pedido</h1>
+                        <div class="breadcrumb" aria-label="breadcrumb">
+                            <a href="#">Home</a> / <a href="#">Pedidos</a> / <span>Novo Pedido</span>
+                        </div>
+                    </div>
+                    
+                    <div class="page-actions">
+                        <span class="pedido-numero" aria-label="Número do pedido">
+                            <i class="fas fa-receipt" aria-hidden="true"></i> Pedido #1281
+                        </span>
+                        <span class="pedido-data" aria-label="Data e hora do pedido">
+                            <i class="fas fa-clock" aria-hidden="true"></i> 14/04/2025 14:30
+                        </span>
+                    </div>
+                </section>
+                
+                <!-- Layout do Pedido -->
+                <div class="pedido-container">
+                    <!-- Coluna Esquerda -->
+                    <div class="pedido-left">
+                        <!-- Tipo de Pedido e Cliente -->
+                        <section class="pedido-card pedido-info-card">
+                            <header class="pedido-card-header">
+                                <h2 class="pedido-card-title">
+                                    <i class="fas fa-info-circle" aria-hidden="true"></i> Informações do Pedido
+                                </h2>
+                                <div class="pedido-card-status">
+                                    <span class="tag-status success">Aberto</span>
+                                </div>
+                            </header>
+                            
+                            <div class="pedido-card-body">
+                                <div class="pedido-type-tabs" role="tablist">
+                                    <button type="button" id="tab-mesa-btn" class="pedido-type-tab active" role="tab" aria-selected="true" aria-controls="tab-mesa-content">
+                                        <i class="fas fa-chair" aria-hidden="true"></i> Mesa
+                                    </button>
+                                    <button type="button" id="tab-viagem-btn" class="pedido-type-tab" role="tab" aria-selected="false" aria-controls="tab-viagem-content">
+                                        <i class="fas fa-shopping-bag" aria-hidden="true"></i> Viagem
+                                    </button>
+                                    <button type="button" id="tab-delivery-btn" class="pedido-type-tab" role="tab" aria-selected="false" aria-controls="tab-delivery-content">
+                                        <i class="fas fa-motorcycle" aria-hidden="true"></i> Delivery
+                                    </button>
+                                </div>
+                                
+                                <div class="client-selection">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="cliente-nome">Cliente</label>
+                                            <div class="input-with-icon">
+                                                <input type="text" id="cliente-nome" placeholder="Selecione ou cadastre um cliente">
+                                                <button class="icon-button" id="btn-buscar-cliente" aria-label="Buscar cliente">
+                                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="cliente-telefone">Telefone</label>
+                                            <input type="tel" id="cliente-telefone" placeholder="Telefone do cliente">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seleção de Mesa / Entrega -->
+                        <section class="pedido-card order-type-details">
+                            <div class="tab-content-container">
+                                <!-- Conteúdo da Tab Mesa -->
+                                <div id="tab-mesa-content" class="tab-content active" role="tabpanel" aria-labelledby="tab-mesa-btn">
+                                    <header class="tab-content-header">
+                                        <h2>Selecione uma Mesa</h2>
+                                    </header>
+                                    
+                                    <div class="mesa-grid" role="grid" aria-label="Seleção de mesas">
+                                        <div class="mesa-item livre" role="gridcell" tabindex="0" aria-label="Mesa 1, Livre, 4 pessoas">
+                                            <span class="mesa-numero">01</span>
+                                            <span class="mesa-status livre">Livre</span>
+                                            <span class="mesa-capacidade">4 pessoas</span>
+                                        </div>
+                                        
+                                        <div class="mesa-item ocupada" role="gridcell" tabindex="-1" aria-label="Mesa 2, Ocupada, 2 pessoas" aria-disabled="true">
+                                            <span class="mesa-numero">02</span>
+                                            <span class="mesa-status ocupada">Ocupada</span>
+                                            <span class="mesa-capacidade">2 pessoas</span>
+                                        </div>
+                                        
+                                        <div class="mesa-item livre selected" role="gridcell" tabindex="0" aria-label="Mesa 3, Livre, 4 pessoas, selecionada" aria-selected="true">
+                                            <span class="mesa-numero">03</span>
+                                            <span class="mesa-status livre">Livre</span>
+                                            <span class="mesa-capacidade">4 pessoas</span>
+                                        </div>
+                                        
+                                        <div class="mesa-item reservada" role="gridcell" tabindex="-1" aria-label="Mesa 4, Reservada, 6 pessoas" aria-disabled="true">
+                                            <span class="mesa-numero">04</span>
+                                            <span class="mesa-status reservada">Reservada</span>
+                                            <span class="mesa-capacidade">6 pessoas</span>
+                                        </div>
+                                        
+                                        <div class="mesa-item livre" role="gridcell" tabindex="0" aria-label="Mesa 5, Livre, 4 pessoas">
+                                            <span class="mesa-numero">05</span>
+                                            <span class="mesa-status livre">Livre</span>
+                                            <span class="mesa-capacidade">4 pessoas</span>
+                                        </div>
+                                        
+                                        <div class="mesa-item livre" role="gridcell" tabindex="0" aria-label="Mesa 6, Livre, 4 pessoas">
+                                            <span class="mesa-numero">06</span>
+                                            <span class="mesa-status livre">Livre</span>
+                                            <span class="mesa-capacidade">4 pessoas</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Conteúdo da Tab Viagem -->
+                                <div id="tab-viagem-content" class="tab-content" role="tabpanel" aria-labelledby="tab-viagem-btn" hidden>
+                                    <header class="tab-content-header">
+                                        <h2>Detalhes da Retirada</h2>
+                                    </header>
+                                    
+                                    <div class="form-container">
+                                        <div class="form-group">
+                                            <label for="viagem-retirada">Horário de Retirada</label>
+                                            <input type="time" id="viagem-retirada">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="viagem-obs">Observações para Embalagem</label>
+                                            <textarea id="viagem-obs" rows="3" placeholder="Instruções especiais para embalagem..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Conteúdo da Tab Delivery -->
+                                <div id="tab-delivery-content" class="tab-content" role="tabpanel" aria-labelledby="tab-delivery-btn" hidden>
+                                    <header class="tab-content-header">
+                                        <h2>Detalhes da Entrega</h2>
+                                    </header>
+                                    
+                                    <div class="form-container">
+                                        <div class="form-group">
+                                            <label for="delivery-endereco">Endereço de Entrega</label>
+                                            <input type="text" id="delivery-endereco" placeholder="Rua, número, complemento">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="delivery-bairro">Bairro</label>
+                                            <input type="text" id="delivery-bairro" placeholder="Bairro">
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="delivery-taxa">Taxa de Entrega</label>
+                                                <input type="text" id="delivery-taxa" value="R$ 8,00">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="delivery-tempo">Tempo Estimado</label>
+                                                <input type="text" id="delivery-tempo" value="30-45 min">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Produtos -->
+                        <section class="pedido-card produtos-card">
+                            <header class="pedido-card-header">
+                                <h2 class="pedido-card-title">
+                                    <i class="fas fa-list" aria-hidden="true"></i> Produtos
+                                </h2>
+                                <div class="quick-filters">
+                                    <button class="btn-quick-filter" aria-label="Filtro rápido mais vendidos">
+                                        <i class="fas fa-star" aria-hidden="true"></i> Mais Vendidos
+                                    </button>
+                                </div>
+                            </header>
+                            
+                            <div class="pedido-card-body">
+                                <div class="search-produtos">
+                                    <label for="produto-busca" class="sr-only">Buscar produtos</label>
+                                    <input type="text" id="produto-busca" placeholder="Buscar produtos pelo nome...">
+                                    <button id="btn-buscar-produto" aria-label="Buscar">
+                                        <i class="fas fa-search" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="categorias-scroll" role="tablist" aria-label="Categorias de produtos">
+                                    <button class="categoria-btn active" role="tab" aria-selected="true" data-categoria="todos">Todos</button>
+                                    <button class="categoria-btn" role="tab" aria-selected="false" data-categoria="peixes">Peixes</button>
+                                    <button class="categoria-btn" role="tab" aria-selected="false" data-categoria="porcoes">Porções</button>
+                                    <button class="categoria-btn" role="tab" aria-selected="false" data-categoria="bebidas">Bebidas</button>
+                                    <button class="categoria-btn" role="tab" aria-selected="false" data-categoria="sobremesas">Sobremesas</button>
+                                </div>
+                                
+                                <div class="produtos-grid" role="tabpanel">
+                                    <button class="produto-card" data-id="1" data-nome="Peixe Frito" data-preco="78.50" aria-label="Peixe Frito, R$ 78,50">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-fish" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Peixe Frito</div>
+                                            <div class="produto-preco">R$ 78,50</div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button class="produto-card" data-id="2" data-nome="Porção de Batatas" data-preco="35.00" aria-label="Porção de Batatas, R$ 35,00">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-bacon" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Porção de Batatas</div>
+                                            <div class="produto-preco">R$ 35,00</div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button class="produto-card" data-id="3" data-nome="Refrigerante" data-preco="8.00" aria-label="Refrigerante, R$ 8,00">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-glass-whiskey" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Refrigerante</div>
+                                            <div class="produto-preco">R$ 8,00</div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button class="produto-card" data-id="4" data-nome="Cerveja" data-preco="12.00" aria-label="Cerveja, R$ 12,00">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-beer" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Cerveja</div>
+                                            <div class="produto-preco">R$ 12,00</div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button class="produto-card" data-id="5" data-nome="Camarão Alho e Óleo" data-preco="98.00" aria-label="Camarão Alho e Óleo, R$ 98,00">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-water" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Camarão Alho e Óleo</div>
+                                            <div class="produto-preco">R$ 98,00</div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button class="produto-card" data-id="6" data-nome="Arroz" data-preco="15.00" aria-label="Arroz, R$ 15,00">
+                                        <div class="produto-imagem">
+                                            <i class="fas fa-grip-horizontal" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="produto-info">
+                                            <div class="produto-nome">Arroz</div>
+                                            <div class="produto-preco">R$ 15,00</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- Coluna Direita -->
+                    <div class="pedido-right">
+                        <!-- Itens do Pedido -->
+                        <section class="pedido-card pedido-items-card">
+                            <header class="pedido-card-header">
+                                <h2 class="pedido-card-title">
+                                    <i class="fas fa-shopping-cart" aria-hidden="true"></i> Itens do Pedido
+                                </h2>
+                                <div class="pedido-card-actions">
+                                    <button class="btn-clear" id="btn-limpar-pedido" aria-label="Limpar todos os itens">
+                                        <i class="fas fa-trash" aria-hidden="true"></i> Limpar
+                                    </button>
+                                </div>
+                            </header>
+                            
+                            <div class="pedido-card-body">
+                                <div class="pedido-items" aria-label="Lista de itens do pedido">
+                                    <!-- Item 1 -->
+                                    <div class="item-card" data-item-id="1">
+                                        <div class="item-info">
+                                            <div class="item-top">
+                                                <div class="item-nome">Peixe Frito</div>
+                                                <div class="item-price">R$ 78,50</div>
+                                            </div>
+                                            <div class="item-obs">Bem passado, sem cebola</div>
+                                        </div>
+                                        <div class="item-actions">
+                                            <div class="item-quantity">
+                                                <button class="btn-qty" data-action="decrease" aria-label="Diminuir quantidade">
+                                                    <i class="fas fa-minus" aria-hidden="true"></i>
+                                                </button>
+                                                <span class="item-qtd" aria-label="1 unidade">1</span>
+                                                <button class="btn-qty" data-action="increase" aria-label="Aumentar quantidade">
+                                                    <i class="fas fa-plus" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <button class="item-remover" aria-label="Remover item">
+                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Item 2 -->
+                                    <div class="item-card" data-item-id="2">
+                                        <div class="item-info">
+                                            <div class="item-top">
+                                                <div class="item-nome">Porção de Batatas</div>
+                                                <div class="item-price">R$ 35,00</div>
+                                            </div>
+                                        </div>
+                                        <div class="item-actions">
+                                            <div class="item-quantity">
+                                                <button class="btn-qty" data-action="decrease" aria-label="Diminuir quantidade">
+                                                    <i class="fas fa-minus" aria-hidden="true"></i>
+                                                </button>
+                                                <span class="item-qtd" aria-label="1 unidade">1</span>
+                                                <button class="btn-qty" data-action="increase" aria-label="Aumentar quantidade">
+                                                    <i class="fas fa-plus" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <button class="item-remover" aria-label="Remover item">
+                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Item 3 -->
+                                    <div class="item-card" data-item-id="3">
+                                        <div class="item-info">
+                                            <div class="item-top">
+                                                <div class="item-nome">Refrigerante</div>
+                                                <div class="item-price">R$ 16,00</div>
+                                            </div>
+                                        </div>
+                                        <div class="item-actions">
+                                            <div class="item-quantity">
+                                                <button class="btn-qty" data-action="decrease" aria-label="Diminuir quantidade">
+                                                    <i class="fas fa-minus" aria-hidden="true"></i>
+                                                </button>
+                                                <span class="item-qtd" aria-label="2 unidades">2</span>
+                                                <button class="btn-qty" data-action="increase" aria-label="Aumentar quantidade">
+                                                    <i class="fas fa-plus" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <button class="item-remover" aria-label="Remover item">
+                                                <i class="fas fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pedido-observacao">Observações Gerais</label>
+                                    <textarea id="pedido-observacao" rows="2" placeholder="Observações gerais para o pedido..."></textarea>
+                                </div>
+                                
+                                <div class="totais-info">
+                                    <div class="total-row">
+                                        <div class="total-label">Subtotal</div>
+                                        <div class="total-value" id="pedido-subtotal">R$ 129,50</div>
+                                    </div>
+                                    
+                                    <div class="total-row">
+                                        <div class="total-label">Desconto (<span id="desconto-percentual">0</span>%)</div>
+                                        <div class="total-value" id="pedido-desconto-valor">R$ 0,00</div>
+                                    </div>
+                                    
+                                    <div class="total-row">
+                                        <div class="total-label">Taxa de Serviço (<span id="taxa-percentual">10</span>%)</div>
+                                        <div class="total-value" id="pedido-taxa-valor">R$ 12,95</div>
+                                    </div>
+                                    
+                                    <div class="total-row total-final">
+                                        <div class="total-label">Total</div>
+                                        <div class="total-value" id="pedido-total">R$ 142,45</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="pedido-actions">
+                                    <button class="btn-action btn-secondary" id="btn-salvar-rascunho">
+                                        <i class="fas fa-save" aria-hidden="true"></i> Salvar Rascunho
+                                    </button>
+                                    
+                                    <button class="btn-action btn-kitchen" id="btn-enviar-cozinha">
+                                        <i class="fas fa-fire" aria-hidden="true"></i> Enviar p/ Cozinha
+                                    </button>
+                                    
+                                    <button class="btn-action btn-primary btn-large" id="btn-finalizar">
+                                        <i class="fas fa-check-circle" aria-hidden="true"></i> Finalizar Pedido
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Produto -->
+    <div class="modal-container" id="modal-produto" aria-labelledby="modal-produto-title" aria-hidden="true" role="dialog">
+        <div class="modal" role="document">
+            <header class="modal-header">
+                <h3 id="modal-produto-title">Detalhes do Produto</h3>
+                <button class="modal-close" aria-label="Fechar modal">&times;</button>
+            </header>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal-produto-nome">Produto</label>
+                    <input type="text" id="modal-produto-nome" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-produto-quantidade">Quantidade</label>
+                        <input type="number" id="modal-produto-quantidade" min="1" value="1" aria-label="Quantidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-produto-preco">Preço Unitário</label>
+                        <input type="text" id="modal-produto-preco" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modal-produto-observacao">Observações</label>
+                    <textarea id="modal-produto-observacao" rows="2" placeholder="Ex: Sem cebola, bem passado, etc."></textarea>
+                </div>
+                
+                <fieldset class="opcoes-container" id="modal-produto-modificadores">
+                    <legend>Opções</legend>
+                    <div class="checkbox-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="option-1" name="opcoes[]" value="sem-cebola">
+                            <label for="option-1">Sem Cebola</label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="option-2" name="opcoes[]" value="bem-passado">
+                            <label for="option-2">Bem Passado</label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="option-3" name="opcoes[]" value="adicionar-limao">
+                            <label for="option-3">Adicionar Limão</label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            
+            <footer class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-primary" id="modal-produto-adicionar">Adicionar ao Pedido</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal de Cliente -->
+    <div class="modal-container" id="modal-cliente" aria-labelledby="modal-cliente-title" aria-hidden="true" role="dialog">
+        <div class="modal" role="document">
+            <header class="modal-header">
+                <h3 id="modal-cliente-title">Buscar Cliente</h3>
+                <button class="modal-close" aria-label="Fechar modal">&times;</button>
+            </header>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal-cliente-busca">Buscar por nome ou telefone</label>
+                    <div class="input-with-icon">
+                        <input type="text" id="modal-cliente-busca" placeholder="Digite nome ou telefone">
+                        <button class="icon-button" id="btn-modal-buscar-cliente" aria-label="Buscar cliente">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="clientes-resultado">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <caption class="sr-only">Lista de clientes</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Telefone</th>
+                                    <th scope="col">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>João Silva</td>
+                                    <td>(11) 98765-4321</td>
+                                    <td>
+                                        <button class="btn-small btn-selecionar-cliente" data-id="1">Selecionar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Oliveira</td>
+                                    <td>(11) 91234-5678</td>
+                                    <td>
+                                        <button class="btn-small btn-selecionar-cliente" data-id="2">Selecionar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-primary" id="btn-novo-cliente">Novo Cliente</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal de Novo Cliente -->
+    <div class="modal-container" id="modal-novo-cliente" aria-labelledby="modal-novo-cliente-title" aria-hidden="true" role="dialog">
+        <div class="modal" role="document">
+            <header class="modal-header">
+                <h3 id="modal-novo-cliente-title">Cadastrar Novo Cliente</h3>
+                <button class="modal-close" aria-label="Fechar modal">&times;</button>
+            </header>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal-cliente-nome">Nome*</label>
+                    <input type="text" id="modal-cliente-nome" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-cliente-telefone">Telefone*</label>
+                        <input type="tel" id="modal-cliente-telefone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-cliente-email">E-mail</label>
+                        <input type="email" id="modal-cliente-email">
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-primary" id="modal-cliente-salvar">Salvar Cliente</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="notifications-container" aria-live="polite"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    <script src="pedidos.js"></script>
+</body>
+</html>

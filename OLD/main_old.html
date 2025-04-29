@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema SaaS - Restaurante Pesqueiro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Referência ao JavaScript -->
+    <script src="./script.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/150/80" alt="Logo Restaurante Pesqueiro" class="logo">
+                <h2>PesqueiroSys</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Foto Usuário" class="user-avatar">
+                <div class="user-details">
+                    <span class="user-name">João Silva</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li class="menu-item active">
+                        <a href="#dashboard">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#gestao-mesas">
+                            <i class="fas fa-chair"></i>
+                            <span>Gestão de Mesas</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#mapa-mesas">Mapa de Mesas</a></li>
+                            <li><a href="#reservas">Reservas</a></li>
+                            <li><a href="#status-pedidos">Status dos Pedidos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#pedidos">
+                            <i class="fas fa-utensils"></i>
+                            <span>Pedidos</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#novo-pedido">Novo Pedido</a></li>
+                            <li><a href="#editar-pedido">Editar Pedido</a></li>
+                            <li><a href="#enviar-cozinha">Enviar à Cozinha</a></li>
+                            <li><a href="#fechar-conta">Fechar Conta</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#estoque">
+                            <i class="fas fa-boxes"></i>
+                            <span>Estoque</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#entrada-produtos">Entrada de Produtos</a></li>
+                            <li><a href="#saida-produtos">Saída de Produtos</a></li>
+                            <li><a href="#alertas-estoque">Alertas de Estoque</a></li>
+                            <li><a href="#relatorios-estoque">Relatórios</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#financas">
+                            <i class="fas fa-coins"></i>
+                            <span>Finanças</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#registro-vendas">Registro de Vendas</a></li>
+                            <li><a href="#gerenciar-pagamentos">Gerenciar Pagamentos</a></li>
+                            <li><a href="#emissao-recibos">Emissão de Recibos</a></li>
+                            <li><a href="#relatorios-financeiros">Relatórios Financeiros</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#pessoal">
+                            <i class="fas fa-users"></i>
+                            <span>Pessoal (RH)</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#cadastro-funcionarios">Cadastro de Funcionários</a></li>
+                            <li><a href="#escala-trabalho">Escala de Trabalho</a></li>
+                            <li><a href="#registro-horas">Registro de Horas</a></li>
+                            <li><a href="#folha-pagamento">Folha de Pagamento</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#configuracoes">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#info-gerais">Informações Gerais</a></li>
+                            <li><a href="#taxas-impostos">Taxas e Impostos</a></li>
+                            <li><a href="#cardapio">Cardápio</a></li>
+                            <li><a href="#config-gerais">Gerais</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <a href="#administracao">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Administração</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#usuarios">Usuários</a></li>
+                            <li><a href="#permissoes">Permissões</a></li>
+                            <li><a href="#logs-atividade">Logs de Atividade</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#suporte">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Suporte</span>
+                </a>
+                <a href="#sair">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-plus"></i>
+                            <span>Novo Pedido</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <div class="breadcrumb">
+                        <span>Home</span> / <span>Dashboard</span>
+                    </div>
+                </div>
+                
+                <!-- Cards de Resumo -->
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Mesas</h3>
+                            <div class="card-numbers">
+                                <span class="number">12</span>
+                                <span class="status">/ 20 ocupadas</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Pedidos</h3>
+                            <div class="card-numbers">
+                                <span class="number">28</span>
+                                <span class="status">+14% hoje</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Faturamento</h3>
+                            <div class="card-numbers">
+                                <span class="number">R$ 4.250</span>
+                                <span class="status">+5% hoje</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Alertas</h3>
+                            <div class="card-numbers">
+                                <span class="number">3</span>
+                                <span class="status">Requer atenção</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Seção Mapa de Mesas -->
+                <section class="mesas-section">
+                    <div class="section-header">
+                        <h2>Mapa de Mesas</h2>
+                        <div class="section-actions">
+                            <button class="btn">Ver todas</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mesas-grid">
+                        <div class="mesa livre">
+                            <span class="mesa-number">01</span>
+                            <span class="mesa-status">Livre</span>
+                        </div>
+                        
+                        <div class="mesa ocupada">
+                            <span class="mesa-number">02</span>
+                            <span class="mesa-status">Ocupada</span>
+                            <span class="mesa-info">2 pessoas</span>
+                        </div>
+                        
+                        <div class="mesa ocupada">
+                            <span class="mesa-number">03</span>
+                            <span class="mesa-status">Ocupada</span>
+                            <span class="mesa-info">4 pessoas</span>
+                        </div>
+                        
+                        <div class="mesa reservada">
+                            <span class="mesa-number">04</span>
+                            <span class="mesa-status">Reservada</span>
+                            <span class="mesa-info">19:00</span>
+                        </div>
+                        
+                        <div class="mesa livre">
+                            <span class="mesa-number">05</span>
+                            <span class="mesa-status">Livre</span>
+                        </div>
+                        
+                        <div class="mesa livre">
+                            <span class="mesa-number">06</span>
+                            <span class="mesa-status">Livre</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Seção Pedidos Recentes -->
+                <section class="pedidos-section">
+                    <div class="section-header">
+                        <h2>Pedidos Recentes</h2>
+                        <div class="section-actions">
+                            <button class="btn">Ver todos</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Pedido #</th>
+                                    <th>Mesa</th>
+                                    <th>Itens</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#1254</td>
+                                    <td>03</td>
+                                    <td>Peixe Frito, Porção de Batatas, Refrigerante</td>
+                                    <td>R$ 98,50</td>
+                                    <td><span class="status em-preparo">Em Preparo</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#1253</td>
+                                    <td>02</td>
+                                    <td>Camarão ao Alho, Arroz, Salada, Cerveja</td>
+                                    <td>R$ 145,00</td>
+                                    <td><span class="status servido">Servido</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#1252</td>
+                                    <td>01</td>
+                                    <td>Tilápia Grelhada, Arroz, Feijão</td>
+                                    <td>R$ 78,00</td>
+                                    <td><span class="status fechado">Fechado</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Seção Alertas de Estoque -->
+                <section class="alertas-section">
+                    <div class="section-header">
+                        <h2>Alertas de Estoque</h2>
+                        <div class="section-actions">
+                            <button class="btn">Ver todos</button>
+                        </div>
+                    </div>
+                    
+                    <div class="alertas-grid">
+                        <div class="alerta-card">
+                            <div class="alerta-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="alerta-content">
+                                <h4>Cerveja Pilsen 600ml</h4>
+                                <p>Estoque abaixo do mínimo: 8 unidades</p>
+                            </div>
+                            <div class="alerta-actions">
+                                <button class="btn-small">Comprar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="alerta-card">
+                            <div class="alerta-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="alerta-content">
+                                <h4>Tilápia Fresca</h4>
+                                <p>Estoque abaixo do mínimo: 3,5 kg</p>
+                            </div>
+                            <div class="alerta-actions">
+                                <button class="btn-small">Comprar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="alerta-card">
+                            <div class="alerta-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="alerta-content">
+                                <h4>Óleo de Soja</h4>
+                                <p>Estoque abaixo do mínimo: 2 litros</p>
+                            </div>
+                            <div class="alerta-actions">
+                                <button class="btn-small">Comprar</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
