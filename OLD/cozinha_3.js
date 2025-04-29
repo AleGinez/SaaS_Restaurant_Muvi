@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    'use strict';
+    'use strict'; 
     
     // ===================================================================
     // ELEMENT REFERENCES
