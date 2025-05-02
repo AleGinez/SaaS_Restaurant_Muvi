@@ -12,7 +12,7 @@ router.get('/user', (req, res) => {
 });
 
 // Rota protegida com middleware de verificação de função
-router.get('/admin-only', authMiddleware.hasRole(['admin']), (req, res) => {
+router.get('/admin', authMiddleware.hasRole(['admin']), (req, res) => {
   res.json({ message: 'Área restrita a administradores' });
 });
 

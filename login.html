@@ -199,6 +199,9 @@
             font-size: 1rem;
             transition: background-color 0.3s;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .btn-primary {
@@ -255,6 +258,22 @@
             animation: fadeIn 0.8s forwards;
         }
         
+        /* Spinner para o botão de login */
+        .btn-loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         /* Responsivo */
         @media (min-width: 768px) {
             .login-image {
@@ -286,10 +305,18 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">Usuário</label>
+                    <label for="tenant">Restaurante</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">🏢</span>
+                        <input type="text" id="tenant" name="tenant" placeholder="Digite o código do restaurante" value="recanto" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">E-mail</label>
                     <div class="input-with-icon">
                         <span class="input-icon">👤</span>
-                        <input type="text" id="username" name="username" placeholder="Digite seu nome de usuário" required>
+                        <input type="email" id="username" name="username" placeholder="Digite seu e-mail" required>
                     </div>
                 </div>
                 
@@ -306,10 +333,13 @@
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">Lembrar-me</label>
                     </div>
-                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                    <a href="#" class="forgot-password" id="forgotPasswordLink">Esqueceu a senha?</a>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Entrar</button>
+                <button type="submit" class="btn btn-primary" id="loginButton">
+                    <span class="btn-text">Entrar</span>
+                    <span class="btn-loader"></span>
+                </button>
             </form>
             
             <div class="login-footer">
@@ -321,9 +351,19 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se já existe um token válido
+            if (localStorage.getItem('accessToken')) {
+                // Redirecionar para a página principal
+                window.location.href = 'index.html';
+                return;
+            }
+
             // Selecionar elementos
             const loginForm = document.getElementById('loginForm');
             const loginAlert = document.getElementById('loginAlert');
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = loginButton.querySelector('.btn-text');
+            const buttonLoader = loginButton.querySelector('.btn-loader');
             
             // Adicionar evento para envio do formulário
             loginForm.addEventListener('submit', function(e) {
@@ -332,188 +372,132 @@
                 // Obter valores do formulário
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
+                const tenant = document.getElementById('tenant').value;
+                const remember = document.getElementById('remember').checked;
                 
-                // Função para validar login
-                validateLogin(username, password);
+                // Validar login com a API
+                validateLogin(username, password, tenant, remember);
             });
             
-            // Função para validar login (simulação)
-            function validateLogin(username, password) {
-                // Simulação simples - apenas para demonstração
-                // Em ambiente real, isso seria substituído por uma solicitação AJAX ao servidor
+            // Função para validar login com a API
+            function validateLogin(username, password, tenant_code, remember) {
+                // Mostrar estado de carregamento
+                buttonText.style.display = 'none';
+                buttonLoader.style.display = 'inline-block';
+                loginButton.disabled = true;
                 
-                // Credenciais para teste
-                if (username === 'admin' && password === 'admin123') {
-                    // Login bem-sucedido
-                    showSuccessMessage();
+                // Fazer requisição AJAX para a API
+                fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password, tenant_code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Restaurar estado do botão
+                    buttonText.style.display = 'inline-block';
+                    buttonLoader.style.display = 'none';
+                    loginButton.disabled = false;
                     
-                    // Redirecionar para a página principal após um breve atraso
-                    setTimeout(function() {
-                        window.location.href = 'index.html'; // Redirecionando para main.html em vez de index.html
-                    }, 1500);
-                } else {
-                    // Login falhou
-                    showErrorMessage();
-                }
+                    if (data.accessToken) {
+                        // Login bem-sucedido
+                        showSuccessMessage('Login bem-sucedido! Redirecionando...');
+                        
+                        // Armazenar tokens e informações do usuário
+                        const storage = remember ? localStorage : sessionStorage;
+                        storage.setItem('accessToken', data.accessToken);
+                        storage.setItem('refreshToken', data.refreshToken);
+                        storage.setItem('userData', JSON.stringify(data.user));
+                        storage.setItem('tenantId', data.tenant_id);
+                        
+                        // Redirecionar para a página principal após um breve atraso
+                        setTimeout(function() {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        // Login falhou
+                        showErrorMessage(data.message || 'Erro ao fazer login. Verifique suas credenciais.');
+                    }
+                })
+                .catch(error => {
+                    // Restaurar estado do botão
+                    buttonText.style.display = 'inline-block';
+                    buttonLoader.style.display = 'none';
+                    loginButton.disabled = false;
+                    
+                    // Mostrar mensagem de erro
+                    console.error('Erro:', error);
+                    showErrorMessage('Erro de conexão. Verifique sua internet ou tente novamente mais tarde.');
+                });
             }
             
             // Função para mostrar mensagem de erro
-            function showErrorMessage() {
-                loginAlert.textContent = 'Usuário ou senha incorretos. Por favor, tente novamente.';
+            function showErrorMessage(message) {
+                loginAlert.textContent = message;
                 loginAlert.className = 'alert alert-danger';
                 loginAlert.style.display = 'block';
                 
-                // Esconder a mensagem após 3 segundos
+                // Esconder a mensagem após 5 segundos
                 setTimeout(function() {
                     loginAlert.style.display = 'none';
-                }, 3000);
+                }, 5000);
             }
             
             // Função para mostrar mensagem de sucesso
-            function showSuccessMessage() {
-                loginAlert.textContent = 'Login bem-sucedido! Redirecionando...';
+            function showSuccessMessage(message) {
+                loginAlert.textContent = message;
                 loginAlert.className = 'alert alert-success';
                 loginAlert.style.display = 'block';
             }
             
-            /* 
-            ======================================================
-            CÓDIGO PARA FUTURA INTEGRAÇÃO COM BANCO DE DADOS MYSQL
-            ======================================================
-            
-            // Função para validar login com banco de dados MySQL
-            function validateLoginWithDatabase(username, password) {
-                // Criar objeto XMLHttpRequest
-                const xhr = new XMLHttpRequest();
-                
-                // Configurar a solicitação
-                xhr.open('POST', 'validate_login.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                
-                // Configurar a função de callback
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        
-                        if (response.success) {
-                            // Login bem-sucedido
-                            showSuccessMessage();
-                            
-                            // Armazenar informações do usuário (se necessário)
-                            localStorage.setItem('user', JSON.stringify(response.user));
-                            
-                            // Redirecionar para a página inicial após um breve atraso
-                            setTimeout(function() {
-                                window.location.href = 'main.html'; // Alterado para main.html
-                            }, 1500);
-                        } else {
-                            // Login falhou
-                            showErrorMessage();
-                        }
-                    } else {
-                        // Erro na solicitação
-                        loginAlert.textContent = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
-                        loginAlert.className = 'alert alert-danger';
-                        loginAlert.style.display = 'block';
+            // Evento para o link "Esqueceu a senha"
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('username').value;
+                    
+                    if (!email) {
+                        showErrorMessage('Por favor, informe seu e-mail antes de solicitar a redefinição de senha.');
+                        return;
                     }
-                };
-                
-                // Lidar com erros de rede
-                xhr.onerror = function() {
-                    loginAlert.textContent = 'Erro de conexão. Verifique sua internet.';
-                    loginAlert.className = 'alert alert-danger';
-                    loginAlert.style.display = 'block';
-                };
-                
-                // Enviar a solicitação com os dados do formulário
-                const data = 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
-                xhr.send(data);
-            }
-            
-            // Código PHP para validate_login.php:
-            /*
-            <?php
-            // Configurações de conexão com o banco de dados
-            $host = 'localhost';
-            $dbname = 'recanto_peixe';
-            $dbuser = 'root';
-            $dbpass = '';
-            
-            // Inicializar a resposta
-            $response = array('success' => false);
-            
-            // Verificar se a solicitação é do tipo POST
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Obter os dados do formulário
-                $username = isset($_POST['username']) ? $_POST['username'] : '';
-                $password = isset($_POST['password']) ? $_POST['password'] : '';
-                
-                // Validar entrada
-                if (!empty($username) && !empty($password)) {
-                    try {
-                        // Conectar ao banco de dados
-                        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    
+                    // Mostrar estado de carregamento
+                    buttonText.style.display = 'none';
+                    buttonLoader.style.display = 'inline-block';
+                    loginButton.disabled = true;
+                    
+                    // Fazer requisição para redefinição de senha
+                    fetch('/api/auth/request-password-reset', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Restaurar estado do botão
+                        buttonText.style.display = 'inline-block';
+                        buttonLoader.style.display = 'none';
+                        loginButton.disabled = false;
                         
-                        // Preparar a consulta SQL
-                        $stmt = $pdo->prepare("SELECT id, nome, perfil, senha FROM usuarios WHERE usuario = :username LIMIT 1");
-                        $stmt->bindParam(':username', $username);
-                        $stmt->execute();
+                        // Mostrar mensagem de sucesso (por segurança, sempre mostramos esta mensagem mesmo que o email não exista)
+                        showSuccessMessage('Se o e-mail estiver cadastrado, enviamos instruções para redefinição de senha.');
+                    })
+                    .catch(error => {
+                        // Restaurar estado do botão
+                        buttonText.style.display = 'inline-block';
+                        buttonLoader.style.display = 'none';
+                        loginButton.disabled = false;
                         
-                        // Verificar se o usuário existe
-                        if ($stmt->rowCount() > 0) {
-                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                            
-                            // Verificar a senha
-                            // Em produção, use password_verify() para senhas com hash
-                            // if (password_verify($password, $user['senha'])) {
-                            if ($password === $user['senha']) {  // Isso é apenas para demonstração, use hash em produção!
-                                // Login bem-sucedido
-                                $response['success'] = true;
-                                
-                                // Remover a senha antes de enviar dados do usuário
-                                unset($user['senha']);
-                                $response['user'] = $user;
-                                
-                                // Iniciar a sessão e armazenar dados do usuário
-                                session_start();
-                                $_SESSION['user_id'] = $user['id'];
-                                $_SESSION['user_name'] = $user['nome'];
-                                $_SESSION['user_perfil'] = $user['perfil'];
-                            }
-                        }
-                    } catch (PDOException $e) {
-                        // Erro na conexão com o banco de dados
-                        $response['error'] = 'Erro de banco de dados: ' . $e->getMessage();
-                    }
-                }
+                        // Mostrar mensagem de erro genérica
+                        showErrorMessage('Erro ao processar solicitação. Tente novamente mais tarde.');
+                    });
+                });
             }
-            
-            // Enviar a resposta como JSON
-            header('Content-Type: application/json');
-            echo json_encode($response);
-            ?>
-            */
-            
-            // Estrutura da Tabela SQL:
-            /*
-            CREATE TABLE usuarios (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                usuario VARCHAR(50) NOT NULL UNIQUE,
-                senha VARCHAR(255) NOT NULL,
-                nome VARCHAR(100) NOT NULL,
-                email VARCHAR(100) NOT NULL,
-                perfil ENUM('admin', 'gerente', 'garcom', 'cozinha', 'caixa') NOT NULL,
-                status TINYINT(1) DEFAULT 1,
-                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            );
-            
-            -- Inserir um usuário admin de exemplo
-            INSERT INTO usuarios (usuario, senha, nome, email, perfil) 
-            VALUES ('admin', 'admin123', 'Administrador', 'admin@ranchopeixe.com', 'admin');
-            */
-            
         });
     </script>
 </body>

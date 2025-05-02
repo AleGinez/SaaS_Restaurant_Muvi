@@ -1,0 +1,33 @@
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T06:56:55.366Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T06:57:58.956Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T06:58:19.469Z"}
+{"level":"error","message":"SyntaxError: Unexpected token ''', \"'{username:\" is not valid JSON\nSyntaxError: Unexpected token ''', \"'{username:\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    at createStrictSyntaxError (C:\\Projects\\restaurante-app\\node_modules\\body-parser\\lib\\types\\json.js:156:10)\n    at parse (C:\\Projects\\restaurante-app\\node_modules\\body-parser\\lib\\types\\json.js:71:15)\n    at C:\\Projects\\restaurante-app\\node_modules\\body-parser\\lib\\read.js:123:18\n    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)\n    at invokeCallback (C:\\Projects\\restaurante-app\\node_modules\\raw-body\\index.js:238:16)\n    at done (C:\\Projects\\restaurante-app\\node_modules\\raw-body\\index.js:227:7)\n    at IncomingMessage.onEnd (C:\\Projects\\restaurante-app\\node_modules\\raw-body\\index.js:287:7)\n    at IncomingMessage.emit (node:events:518:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)","service":"api-restaurante","timestamp":"2025-05-02T06:59:23.892Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:00:37.066Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:00:51.537Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:01:22.427Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:01:44.599Z"}
+{"level":"warn","message":"Limite de tentativas de login excedido - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:01:44.599Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:01:54.790Z"}
+{"level":"warn","message":"Limite de tentativas de login excedido - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:01:54.791Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T07:04:40.492Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:06:33.686Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:06:43.368Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:06:47.855Z"}
+{"level":"info","message":"GET /api/user - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:12:11.919Z"}
+{"level":"info","message":"GET /api/user - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:12:26.811Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:14:38.122Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:15:08.808Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:15:46.219Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T07:17:45.132Z"}
+{"level":"info","message":"GET /api/user - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:17:57.918Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:18:07.016Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:19:15.574Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:20:39.569Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T07:25:44.434Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:25:55.521Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:26:32.030Z"}
+{"level":"info","message":"GET /api/admin - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:26:47.100Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:46:06.545Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:47:45.423Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T07:47:52.162Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T07:48:16.973Z"}
