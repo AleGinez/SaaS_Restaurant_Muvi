@@ -307,6 +307,155 @@
 
     <!-- Área para notificações do sistema -->
     <div class="notifications-container" aria-live="polite"></div>
+    
     <script src="script.js"></script>
+    
+    <!-- Script para autenticação -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se o usuário está autenticado
+            const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            
+            if (!token) {
+                // Redirecionar para login se não estiver autenticado
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Preencher informações do usuário no sidebar
+            const userData = JSON.parse(localStorage.getItem('userData') || sessionStorage.getItem('userData') || '{}');
+            if (userData) {
+                const userNameElement = document.querySelector('.user-name');
+                const userRoleElement = document.querySelector('.user-role');
+                
+                if (userNameElement) userNameElement.textContent = userData.nome || 'Usuário';
+                if (userRoleElement) userRoleElement.textContent = userData.perfil || 'Padrão';
+            }
+            
+            // Configurar botão de logout
+            const logoutLink = document.querySelector('a[href="#sair"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Mostrar indicador de carregamento se existir
+                    const loadingIndicator = document.getElementById('loading-indicator');
+                    if (loadingIndicator) loadingIndicator.style.display = 'flex';
+                    
+                    // Chamar API de logout
+                    fetch('http://localhost:3000/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(() => {
+                        // Limpar armazenamento
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        localStorage.removeItem('userData');
+                        localStorage.removeItem('tenantId');
+                        
+                        sessionStorage.removeItem('accessToken');
+                        sessionStorage.removeItem('refreshToken');
+                        sessionStorage.removeItem('userData');
+                        sessionStorage.removeItem('tenantId');
+                        
+                        // Redirecionar para login
+                        window.location.href = 'login.html';
+                    })
+                    .catch(error => {
+                        console.error('Erro ao fazer logout:', error);
+                        // Mesmo com erro, fazer logout local
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.href = 'login.html';
+                    })
+                    .finally(() => {
+                        // Esconder indicador de carregamento
+                        if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    });
+                });
+            }
+            
+            // Interceptar requisições para adicionar token de autenticação
+            const originalFetch = window.fetch;
+            window.fetch = async function(url, options = {}) {
+                // Se não for requisição de login ou refresh token
+                if (!url.includes('/api/auth/login') && !url.includes('/api/auth/refresh-token')) {
+                    // Configurar headers se não existirem
+                    options.headers = options.headers || {};
+                    
+                    // Adicionar token de autorização
+                    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+                    if (token) {
+                        options.headers['Authorization'] = `Bearer ${token}`;
+                    }
+                }
+                
+                try {
+                    // Fazer a requisição
+                    const response = await originalFetch(url, options);
+                    
+                    // Se a resposta for 401 (Não Autorizado) ou 403 (Proibido)
+                    if (response.status === 401 || response.status === 403) {
+                        // Tentar refresh token
+                        const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+                        
+                        if (refreshToken) {
+                            try {
+                                const refreshResponse = await originalFetch('http://localhost:3000/api/auth/refresh-token', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ refreshToken })
+                                });
+                                
+                                const refreshData = await refreshResponse.json();
+                                
+                                if (refreshData.accessToken) {
+                                    // Atualizar token
+                                    if (localStorage.getItem('accessToken')) {
+                                        localStorage.setItem('accessToken', refreshData.accessToken);
+                                    } else {
+                                        sessionStorage.setItem('accessToken', refreshData.accessToken);
+                                    }
+                                    
+                                    // Retentar a requisição original com o novo token
+                                    options.headers['Authorization'] = `Bearer ${refreshData.accessToken}`;
+                                    return originalFetch(url, options);
+                                } else {
+                                    // Falha no refresh token, fazer logout
+                                    localStorage.clear();
+                                    sessionStorage.clear();
+                                    window.location.href = 'login.html';
+                                    throw new Error('Sessão expirada. Por favor, faça login novamente.');
+                                }
+                            } catch (refreshError) {
+                                // Erro no refresh token, fazer logout
+                                localStorage.clear();
+                                sessionStorage.clear();
+                                window.location.href = 'login.html';
+                                throw new Error('Sessão expirada. Por favor, faça login novamente.');
+                            }
+                        } else {
+                            // Não há refresh token, fazer logout
+                            localStorage.clear();
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+                        }
+                    }
+                    
+                    return response;
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    throw error;
+                }
+            };
+        });
+    </script>
 </body>
 </html>
