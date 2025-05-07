@@ -7,6 +7,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Ativar debug para acompanhamento de carregamento
+    const DEBUG = true;
+    
+    function debug(message) {
+        if (DEBUG) {
+            console.log(`[DEBUG] ${message}`);
+        }
+    }
+    
+    debug('Script principal inicializado');
+    
     // Referências aos elementos DOM
     const sidebar = document.querySelector('.sidebar');
     const menuToggle = document.querySelector('.menu-toggle');
@@ -153,7 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'gerenciar-itens': 'gerenciar-itens.html',
         'categorias': 'categorias.html',
         'perfil-restaurante': 'perfil-restaurante.html',
-        'usuarios-permissoes': 'usuarios-permissoes.html'
+        'usuarios': 'cadastro-usuario.html',
+        'cadastro-funcionarios': 'cadastro.html'
     };
     
     // Histórico de navegação para controle de "voltar"
@@ -206,6 +218,719 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // =====================================
+    // FUNÇÕES DE INICIALIZAÇÃO DE ELEMENTOS
+    // =====================================
+    
+    // Inicializar elementos de navegação por tabs
+    function setupTabNavigation() {
+        debug('Inicializando navegação por tabs');
+        const formTabs = document.querySelectorAll('.form-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        if (formTabs.length === 0) {
+            debug('Nenhuma tab encontrada para inicializar');
+            return;
+        }
+
+        debug(`Encontradas ${formTabs.length} tabs e ${tabContents.length} conteúdos de tab`);
+        
+        formTabs.forEach(tab => {
+            tab.addEventListener('click', function(event) {
+                debug(`Tab clicada: ${this.textContent.trim()}`);
+                event.preventDefault();
+                
+                // Remove active class from all tabs and hide content
+                formTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.setAttribute('hidden', 'true');
+                });
+                
+                // Add active class to clicked tab and show content
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                
+                const tabId = this.getAttribute('aria-controls');
+                const tabContent = document.getElementById(tabId);
+                
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                    tabContent.removeAttribute('hidden');
+                    debug(`Conteúdo da tab ativado: ${tabId}`);
+                } else {
+                    debug(`Erro: Conteúdo da tab não encontrado para id: ${tabId}`);
+                }
+            });
+        });
+    }
+    
+    // Configuração de upload de foto
+    function setupPhotoUpload() {
+        debug('Inicializando upload de foto');
+        const photoInputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+        
+        photoInputs.forEach(photoInput => {
+            const previewId = photoInput.getAttribute('data-preview') || photoInput.id + '-preview';
+            const photoPreview = document.getElementById(previewId);
+            
+            if (!photoPreview) {
+                debug(`Erro: Preview de foto não encontrado para input: ${photoInput.id}`);
+                return;
+            }
+            
+            photoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                
+                if (file) {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    if (!validTypes.includes(file.type)) {
+                        showNotification('Por favor, selecione uma imagem válida (JPEG, PNG ou GIF)', 'error');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('A imagem deve ter no máximo 5MB', 'error');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Preview the image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoPreview.src = e.target.result;
+                        debug('Preview de foto atualizado');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Click on photo preview to trigger file input
+            const formPhoto = photoPreview.closest('.form-photo');
+            if (formPhoto) {
+                formPhoto.addEventListener('click', function() {
+                    photoInput.click();
+                    debug('Clique na área de foto detectado');
+                });
+            }
+        });
+    }
+    
+    // Configuração de toggle de senha
+    function setupPasswordToggle() {
+        debug('Inicializando toggles de senha');
+        const toggleButtons = document.querySelectorAll('[id^="btn-toggle-"]');
+        
+        toggleButtons.forEach(button => {
+            // Extract the input ID from button ID (btn-toggle-senha -> senha)
+            const inputId = button.id.replace('btn-toggle-', '');
+            const input = document.getElementById(inputId);
+            
+            if (!input) {
+                debug(`Erro: Campo de senha não encontrado para botão: ${button.id}`);
+                return;
+            }
+            
+            button.addEventListener('click', function() {
+                debug(`Toggle de visibilidade para campo: ${inputId}`);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    button.querySelector('i').classList.remove('fa-eye');
+                    button.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    button.querySelector('i').classList.remove('fa-eye-slash');
+                    button.querySelector('i').classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Botões de gerar senha
+        const gerarSenhaButtons = document.querySelectorAll('[id^="btn-gerar-senha"]');
+        gerarSenhaButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                debug('Gerando senha aleatória');
+                const senha = generateRandomPassword();
+                
+                // Find password fields
+                const senhaInput = document.getElementById('usuario-senha') || document.getElementById('funcionario-senha');
+                const confirmarSenhaInput = document.getElementById('usuario-confirmar-senha') || document.getElementById('funcionario-confirmar-senha');
+                
+                if (senhaInput) senhaInput.value = senha;
+                if (confirmarSenhaInput) confirmarSenhaInput.value = senha;
+                
+                showNotification('Senha aleatória gerada com sucesso', 'success');
+            });
+        });
+    }
+    
+    // Gerar senha aleatória
+    function generateRandomPassword() {
+        const length = 10;
+        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
+        let password = '';
+        
+        // Ensure password has at least one uppercase, one lowercase, one number, and one special char
+        password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)];
+        password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
+        password += '0123456789'[Math.floor(Math.random() * 10)];
+        password += '!@#$%^&*()-_=+'[Math.floor(Math.random() * 14)];
+        
+        // Fill the rest with random chars
+        for (let i = 4; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        
+        // Shuffle the password
+        return password.split('').sort(() => 0.5 - Math.random()).join('');
+    }
+    
+    // Configuração de grupos de permissões
+    function setupPermissionGroups() {
+        debug('Inicializando grupos de permissões');
+        const selectAllButtons = document.querySelectorAll('.btn-select-all');
+        
+        selectAllButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const groupName = this.getAttribute('data-group');
+                const permissionGroup = this.closest('.permission-group');
+                
+                if (!permissionGroup) {
+                    debug(`Erro: Grupo de permissão não encontrado para botão: ${groupName}`);
+                    return;
+                }
+                
+                const checkboxes = permissionGroup.querySelectorAll('input[type="checkbox"]');
+                
+                // Check if all checkboxes are checked
+                const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                
+                // Toggle all checkboxes
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                });
+                
+                // Update button text
+                this.textContent = allChecked ? `Selecionar Todos` : `Desmarcar Todos`;
+                debug(`Estado dos checkboxes alterado para: ${!allChecked ? 'todos marcados' : 'todos desmarcados'}`);
+            });
+        });
+        
+        // Update "Select All" button when individual permissions are changed
+        document.querySelectorAll('.permission-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const permissionGroup = this.closest('.permission-group');
+                updateSelectAllButton(permissionGroup);
+            });
+        });
+    }
+    
+    // Atualizar botão de selecionar todos
+    function updateSelectAllButton(permissionGroup) {
+        if (!permissionGroup) return;
+        
+        const btn = permissionGroup.querySelector('.btn-select-all');
+        const checkboxes = permissionGroup.querySelectorAll('input[type="checkbox"]');
+        
+        if (btn && checkboxes.length > 0) {
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            btn.textContent = allChecked ? `Desmarcar Todos` : `Selecionar Todos`;
+        }
+    }
+    
+    // Configuração de formulários
+    function setupForms() {
+        debug('Inicializando formulários');
+        const forms = document.querySelectorAll('form');
+        
+        forms.forEach(form => {
+            const saveBtn = form.querySelector('[type="submit"], #btn-salvar');
+            const cancelBtn = form.querySelector('#btn-cancelar');
+            const deleteBtn = form.querySelector('#btn-excluir-usuario, #btn-excluir-funcionario');
+            
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function(e) {
+                    debug(`Botão salvar clicado para formulário: ${form.id}`);
+                    e.preventDefault();
+                    
+                    if (validateForm(form)) {
+                        showNotification('Salvando dados...', 'info');
+                        
+                        // Simulate API call
+                        setTimeout(() => {
+                            showNotification('Dados salvos com sucesso!', 'success');
+                            try {
+                                if (form.id === 'form-cadastro-funcionario' && window.funcionariosApp) {
+                                    window.funcionariosApp.showListagem();
+                                } else if (form.id === 'form-cadastro-usuario' && window.usuariosApp) {
+                                    window.usuariosApp.showListagem();
+                                } else {
+                                    debug(`Não foi possível encontrar função de showListagem para o formulário: ${form.id}`);
+                                }
+                            } catch (err) {
+                                debug(`Erro ao executar showListagem: ${err.message}`);
+                                // Fallback if showListagem is not found
+                                const listagemContainer = document.querySelector('.listagem-container');
+                                const formContainer = document.querySelector('.card-container');
+                                if (listagemContainer && formContainer) {
+                                    formContainer.classList.add('hidden');
+                                    listagemContainer.classList.remove('hidden');
+                                }
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function(e) {
+                    debug(`Botão cancelar clicado para formulário: ${form.id}`);
+                    e.preventDefault();
+                    
+                    if (confirm('Tem certeza que deseja cancelar? Todas as alterações serão perdidas.')) {
+                        try {
+                            if (form.id === 'form-cadastro-funcionario' && window.funcionariosApp) {
+                                window.funcionariosApp.showListagem();
+                            } else if (form.id === 'form-cadastro-usuario' && window.usuariosApp) {
+                                window.usuariosApp.showListagem();
+                            } else {
+                                debug(`Não foi possível encontrar função de showListagem para o formulário: ${form.id}`);
+                            }
+                        } catch (err) {
+                            debug(`Erro ao executar showListagem: ${err.message}`);
+                            // Fallback if showListagem is not found
+                            const listagemContainer = document.querySelector('.listagem-container');
+                            const formContainer = document.querySelector('.card-container');
+                            if (listagemContainer && formContainer) {
+                                formContainer.classList.add('hidden');
+                                listagemContainer.classList.remove('hidden');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function(e) {
+                    debug(`Botão excluir clicado para formulário: ${form.id}`);
+                    e.preventDefault();
+                    
+                    // Open delete confirmation modal
+                    const modal = document.getElementById('modal-confirmar-deletar');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                    } else {
+                        if (confirm('Tem certeza que deseja excluir este registro?')) {
+                            showNotification('Excluindo registro...', 'info');
+                            
+                            setTimeout(() => {
+                                showNotification('Registro excluído com sucesso!', 'success');
+                                try {
+                                    if (form.id === 'form-cadastro-funcionario' && window.funcionariosApp) {
+                                        window.funcionariosApp.showListagem();
+                                    } else if (form.id === 'form-cadastro-usuario' && window.usuariosApp) {
+                                        window.usuariosApp.showListagem();
+                                    }
+                                } catch (err) {
+                                    // Fallback if showListagem is not found
+                                    const listagemContainer = document.querySelector('.listagem-container');
+                                    const formContainer = document.querySelector('.card-container');
+                                    if (listagemContainer && formContainer) {
+                                        formContainer.classList.add('hidden');
+                                        listagemContainer.classList.remove('hidden');
+                                    }
+                                }
+                            }, 1000);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    // Validate form
+    function validateForm(form) {
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        // Get all required inputs
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                markInvalid(field);
+                
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+            } else {
+                // Check for specific validations
+                if (field.type === 'email' && !validateEmail(field.value)) {
+                    isValid = false;
+                    markInvalid(field);
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                } else {
+                    markValid(field);
+                }
+            }
+        });
+        
+        // Check password confirmation
+        const senhaInput = form.querySelector('#usuario-senha, #funcionario-senha');
+        const confirmarSenhaInput = form.querySelector('#usuario-confirmar-senha, #funcionario-confirmar-senha');
+        
+        if (senhaInput && confirmarSenhaInput && senhaInput.value && confirmarSenhaInput.value) {
+            if (senhaInput.value !== confirmarSenhaInput.value) {
+                isValid = false;
+                markInvalid(senhaInput);
+                markInvalid(confirmarSenhaInput);
+                
+                if (!firstInvalidField) {
+                    firstInvalidField = senhaInput;
+                }
+                
+                showNotification('As senhas não conferem', 'error');
+            }
+        }
+        
+        // Focus first invalid field
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+            
+            // Activate tab containing the invalid field
+            const tabContent = firstInvalidField.closest('.tab-content');
+            if (tabContent) {
+                const tabId = tabContent.id;
+                const tab = document.querySelector(`[aria-controls="${tabId}"]`);
+                if (tab) {
+                    tab.click();
+                }
+            }
+        }
+        
+        return isValid;
+    }
+    
+    // Mark field as invalid
+    function markInvalid(field) {
+        field.classList.add('is-invalid');
+        field.classList.remove('is-valid');
+        
+        // Create or update error message
+        let errorMsg = field.nextElementSibling;
+        if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+            errorMsg = document.createElement('div');
+            errorMsg.className = 'error-message';
+            field.parentNode.insertBefore(errorMsg, field.nextSibling);
+        }
+        
+        // Get field label
+        const fieldLabel = field.closest('.form-group')?.querySelector('label')?.textContent || 'Este campo';
+        
+        // Set error message based on field type
+        if (field.type === 'email') {
+            errorMsg.textContent = 'Formato de email inválido';
+        } else {
+            errorMsg.textContent = `${fieldLabel} é obrigatório`;
+        }
+    }
+    
+    // Mark field as valid
+    function markValid(field) {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        
+        // Remove error message if exists
+        const errorMsg = field.nextElementSibling;
+        if (errorMsg && errorMsg.classList.contains('error-message')) {
+            errorMsg.remove();
+        }
+    }
+    
+    // Validate email format
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    // Configurar ações nas linhas de tabela
+    function setupTableRows() {
+        debug('Configurando ações das linhas de tabela');
+        
+        // Edit buttons
+        document.querySelectorAll('.action-btn .fa-edit').forEach(btn => {
+            btn.parentElement.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const nome = row.querySelector('.user-name')?.textContent;
+                
+                debug(`Botão editar clicado para: ${nome}`);
+                
+                const listagemContainer = document.querySelector('.listagem-container');
+                const formContainer = document.querySelector('.card-container');
+                
+                if (listagemContainer && formContainer) {
+                    listagemContainer.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    
+                    // Fill form with data
+                    const nomeInput = document.getElementById('usuario-nome') || document.getElementById('funcionario-nome');
+                    if (nomeInput && nome) nomeInput.value = nome;
+                    
+                    // Update URL
+                    const url = new URL(window.location);
+                    url.searchParams.set('action', 'edit');
+                    url.searchParams.set('id', '1'); // Demo ID
+                    window.history.pushState({}, '', url);
+                    
+                    showNotification(`Editando: ${nome}`, 'info');
+                }
+            });
+        });
+        
+        // View buttons
+        document.querySelectorAll('.action-btn .fa-eye').forEach(btn => {
+            btn.parentElement.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const nome = row.querySelector('.user-name')?.textContent;
+                
+                debug(`Botão visualizar clicado para: ${nome}`);
+                showNotification(`Visualizando detalhes de: ${nome}`, 'info');
+            });
+        });
+    }
+    
+    // Configurar botões de filtro
+    function setupFilters() {
+        debug('Configurando filtros');
+        
+        const filterSelects = document.querySelectorAll('.filtro-item select');
+        
+        filterSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                filterTable();
+            });
+        });
+        
+        const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+        if (btnLimparFiltros) {
+            btnLimparFiltros.addEventListener('click', function() {
+                filterSelects.forEach(select => {
+                    select.value = 'todos';
+                });
+                filterTable();
+                showNotification('Filtros limpos', 'info');
+            });
+        }
+    }
+    
+    // Filtrar tabela
+    function filterTable() {
+        debug('Aplicando filtros à tabela');
+        
+        const statusFilter = document.getElementById('filtro-status')?.value || 'todos';
+        const perfilFilter = document.getElementById('filtro-perfil')?.value || 'todos';
+        const cargoFilter = document.getElementById('filtro-cargo')?.value || 'todos';
+        const departamentoFilter = document.getElementById('filtro-departamento')?.value || 'todos';
+        
+        // Lista de tabelas possíveis
+        const tables = [
+            document.getElementById('tabela-usuarios'),
+            document.getElementById('tabela-funcionarios')
+        ];
+        
+        // Filtrar cada tabela
+        tables.forEach(table => {
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // Verificar filtro de status
+                if (statusFilter !== 'todos') {
+                    const statusCell = row.querySelector('.status-badge');
+                    if (statusCell) {
+                        const status = statusCell.textContent.toLowerCase();
+                        if (status !== statusFilter) {
+                            showRow = false;
+                        }
+                    }
+                }
+                
+                // Verificar filtro de perfil/cargo
+                if (perfilFilter !== 'todos' || cargoFilter !== 'todos') {
+                    const roleCell = row.querySelector('.user-role');
+                    if (roleCell) {
+                        const role = roleCell.textContent.toLowerCase();
+                        
+                        if (perfilFilter !== 'todos' && role !== perfilFilter) {
+                            showRow = false;
+                        }
+                        
+                        if (cargoFilter !== 'todos' && role !== cargoFilter) {
+                            showRow = false;
+                        }
+                    }
+                }
+                
+                // Verificar filtro de departamento
+                if (departamentoFilter !== 'todos') {
+                    // Assumindo que o departamento está na terceira coluna (ajuste se necessário)
+                    const deptCell = row.cells[2];
+                    if (deptCell) {
+                        const dept = deptCell.textContent.toLowerCase();
+                        if (dept !== departamentoFilter) {
+                            showRow = false;
+                        }
+                    }
+                }
+                
+                // Exibir ou ocultar linha
+                row.style.display = showRow ? '' : 'none';
+            });
+            
+            // Atualizar informação de contagem
+            const tableInfo = table.parentElement.querySelector('.table-info');
+            if (tableInfo) {
+                const visibleCount = table.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                const totalCount = table.querySelectorAll('tbody tr').length;
+                tableInfo.textContent = `Mostrando ${visibleCount} de ${totalCount} registros`;
+            }
+        });
+    }
+    
+    // Configurar modais
+    function setupModals() {
+        debug('Configurando modais');
+        
+        const modals = document.querySelectorAll('.modal-container');
+        
+        // Modal close buttons
+        document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal-container');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        
+        // Confirm delete buttons
+        document.querySelectorAll('#btn-confirmar-excluir').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal-container');
+                
+                showNotification('Excluindo registro...', 'info');
+                
+                setTimeout(() => {
+                    showNotification('Registro excluído com sucesso!', 'success');
+                    
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                    
+                    // Show listing
+                    const listagemContainer = document.querySelector('.listagem-container');
+                    const formContainer = document.querySelector('.card-container');
+                    
+                    if (listagemContainer && formContainer) {
+                        formContainer.classList.add('hidden');
+                        listagemContainer.classList.remove('hidden');
+                    }
+                }, 1000);
+            });
+        });
+        
+        // Close on outside click
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-container')) {
+                e.target.style.display = 'none';
+            }
+        });
+        
+        // Close on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                modals.forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    }
+    
+    // Inicializar todos os elementos interativos
+    function initializeInteractiveElements() {
+        debug('Inicializando elementos interativos');
+        
+        // Inicializar navegação por tabs
+        setupTabNavigation();
+        
+        // Inicializar upload de fotos
+        setupPhotoUpload();
+        
+        // Inicializar toggles de senha
+        setupPasswordToggle();
+        
+        // Inicializar grupos de permissões
+        setupPermissionGroups();
+        
+        // Inicializar formulários
+        setupForms();
+        
+        // Inicializar ações das linhas de tabela
+        setupTableRows();
+        
+        // Inicializar filtros
+        setupFilters();
+        
+        // Inicializar modais
+        setupModals();
+        
+        // Inicializar outros módulos específicos se existirem
+        if (currentPage === 'cadastro-funcionarios' && window.funcionariosApp) {
+            debug('Inicializando módulo de funcionários');
+            try {
+                if (typeof window.funcionariosApp.init === 'function') {
+                    window.funcionariosApp.init();
+                }
+            } catch (err) {
+                debug(`Erro ao inicializar módulo de funcionários: ${err.message}`);
+            }
+        } else if (currentPage === 'usuarios' && window.usuariosApp) {
+            debug('Inicializando módulo de usuários');
+            try {
+                if (typeof window.usuariosApp.init === 'function') {
+                    window.usuariosApp.init();
+                }
+            } catch (err) {
+                debug(`Erro ao inicializar módulo de usuários: ${err.message}`);
+            }
+        } else if (currentPage === 'pedidos' && window.pedidosApp) {
+            debug('Inicializando módulo de pedidos');
+            try {
+                if (typeof window.pedidosApp.init === 'function') {
+                    window.pedidosApp.init();
+                }
+            } catch (err) {
+                debug(`Erro ao inicializar módulo de pedidos: ${err.message}`);
+            }
+        }
+        
+        debug('Inicialização de elementos interativos concluída');
+    }
+    
     // Função para carregar uma página específica
     function loadPage(pageName) {
         // Valida se a página solicitada existe no mapeamento
@@ -213,6 +938,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.warn(`Página '${pageName}' não encontrada no mapeamento. Redirecionando para o dashboard.`);
             pageName = 'dashboard';
         }
+        
+        debug(`Carregando página: ${pageName}`);
         
         // Esconde mensagem de erro se estiver visível
         const errorMessage = document.querySelector('.error-message');
@@ -272,125 +999,162 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mostrar indicador de carregamento
         loadingIndicator.style.display = 'flex';
         
-        // Tratamento especial para a página de pedidos - carregar o módulo completo
-        if (pageName === 'pedidos') {
-            // Carrega pedidos.html e seus recursos associados
-            fetch('pedidos.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP: ${response.status}`);
+        // Tratamento para carregamento de páginas dinâmicas
+        // Carregando via fetch para permitir uso posterior
+        fetch(pageMap[pageName])
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                debug(`HTML da página ${pageName} carregado com sucesso`);
+                
+                // Criar um parser para extrair o conteúdo relevante
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Extrair o conteúdo da área de conteúdo
+                const pageContent = doc.querySelector('.content-area');
+                
+                if (pageContent) {
+                    // Inserir o conteúdo no contentArea
+                    contentArea.innerHTML = pageContent.innerHTML;
+                    
+                    // Carregar CSS específico da página se necessário
+                    let cssLoaded = false;
+                    if (pageName === 'pedidos' && !document.querySelector('link[href="pedidos.css"]')) {
+                        const linkCss = document.createElement('link');
+                        linkCss.rel = 'stylesheet';
+                        linkCss.href = 'pedidos.css';
+                        document.head.appendChild(linkCss);
+                        cssLoaded = true;
                     }
-                    return response.text();
-                })
-                .then(html => {
-                    // Criar um parser para extrair o conteúdo relevante
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
                     
-                    // Extrair o conteúdo da área de conteúdo
-                    const pedidosContent = doc.querySelector('.content-area');
+                    // Carregar script específico da página
+                    let scriptFile = null;
+                    if (pageName === 'pedidos') {
+                        scriptFile = 'pedidos.js';
+                    } else if (pageName === 'cadastro-funcionarios') {
+                        scriptFile = 'cadastro.js';
+                    } else if (pageName === 'usuarios') {
+                        scriptFile = 'cadastro-usuario.js';
+                    }
                     
-                    if (pedidosContent) {
-                        // Inserir o conteúdo no contentArea
-                        contentArea.innerHTML = pedidosContent.innerHTML;
+                    if (scriptFile && !document.querySelector(`script[src="${scriptFile}"]`)) {
+                        debug(`Carregando script específico: ${scriptFile}`);
+                        const scriptJs = document.createElement('script');
+                        scriptJs.src = scriptFile;
                         
-                        // Verificar se pedidos.css já foi carregado
-                        if (!document.querySelector('link[href="pedidos.css"]')) {
-                            // Adicionar o CSS de pedidos
-                            const linkCss = document.createElement('link');
-                            linkCss.rel = 'stylesheet';
-                            linkCss.href = 'pedidos.css';
-                            document.head.appendChild(linkCss);
-                        }
+                        // Adicionar event listener para verificar se o script foi carregado
+                        scriptJs.onload = function() {
+                            debug(`Script ${scriptFile} carregado com sucesso`);
+                            // Inicializar elementos interativos após carregar o script
+                            setTimeout(() => {
+                                initializeInteractiveElements();
+                            }, 100);
+                        };
                         
-                        // Verificar se pedidos.js já foi carregado
-                        if (!document.querySelector('script[src="pedidos.js"]')) {
-                            // Adicionar o script de pedidos
-                            const scriptJs = document.createElement('script');
-                            scriptJs.src = 'pedidos.js';
-                            document.body.appendChild(scriptJs);
-                        }
+                        scriptJs.onerror = function() {
+                            debug(`Erro ao carregar script: ${scriptFile}`);
+                            showNotification(`Erro ao carregar recursos da página ${pageName}`, 'error');
+                        };
                         
-                        // Atualizar o menu ativo
-                        updateActiveMenu(pageName);
-                        
-                        // Esconder o indicador de carregamento
-                        loadingIndicator.style.display = 'none';
+                        document.body.appendChild(scriptJs);
                     } else {
-                        // Fallback se não conseguir extrair o conteúdo corretamente
-                        contentArea.innerHTML = `
-                            <div class="page-header">
-                                <h1>Pedidos</h1>
-                                <div class="breadcrumb">
-                                    <span>Home</span> / <span>Pedidos</span>
-                                </div>
-                            </div>
-                            <div class="error-message">
-                                <h2>Erro ao carregar módulo de pedidos</h2>
-                                <p>Não foi possível carregar corretamente o módulo de pedidos.</p>
-                                <button class="btn" onclick="window.location.reload()">Tentar Novamente</button>
-                            </div>
-                        `;
-                        loadingIndicator.style.display = 'none';
+                        // Inicializar elementos interativos mesmo sem script específico
+                        setTimeout(() => {
+                            initializeInteractiveElements();
+                        }, 100);
                     }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar a página de pedidos:', error);
+                    
+                    // Atualizar o menu ativo
+                    updateActiveMenu(pageName);
+                } else {
+                    // Fallback se não conseguir extrair o conteúdo corretamente
+                    debug(`Erro: Não foi possível encontrar o conteúdo principal na página ${pageName}`);
                     contentArea.innerHTML = `
                         <div class="page-header">
-                            <h1>Pedidos</h1>
+                            <h1>${formatPageTitle(pageName)}</h1>
                             <div class="breadcrumb">
-                                <span>Home</span> / <span>Pedidos</span>
+                                <span>Home</span> / <span>${formatPageTitle(pageName)}</span>
                             </div>
                         </div>
                         <div class="error-message">
                             <h2>Erro ao carregar a página</h2>
-                            <p>${error.message}</p>
+                            <p>Não foi possível carregar corretamente o conteúdo da página.</p>
                             <button class="btn" onclick="window.location.reload()">Tentar Novamente</button>
                         </div>
                     `;
-                    loadingIndicator.style.display = 'none';
-                });
+                }
+            })
+            .catch(error => {
+                debug(`Erro ao carregar a página ${pageName}: ${error.message}`);
                 
-            // Atualizar a URL
-            updateUrl(pageName);
+                // Template para página em construção
+                const pageTitle = formatPageTitle(pageName);
+                let pageContent = `
+                    <div class="page-header">
+                        <h1>${pageTitle}</h1>
+                        <div class="breadcrumb">
+                            <span>Home</span> / <span>${pageTitle}</span>
+                        </div>
+                    </div>
+                    <div class="content-fade-in">
+                        <div class="card" style="padding: 30px; text-align: center;">
+                            <h2 style="margin-bottom: 20px;">Página em Desenvolvimento</h2>
+                            <p style="margin-bottom: 20px;">Esta funcionalidade será implementada nas próximas sprints do MVP.</p>
+                            <button class="btn" onclick="history.back()">Voltar</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Páginas específicas
+                if (pageName === 'mapa-mesas') {
+                    pageContent = getMapaMesasTemplate();
+                }
+                
+                contentArea.innerHTML = pageContent;
+                updateActiveMenu(pageName);
+            })
+            .finally(() => {
+                // Esconder o indicador de carregamento
+                loadingIndicator.style.display = 'none';
+                
+                // Atualizar a URL
+                updateUrl(pageName);
+                
+                // Adicionar botão de inicialização manual em modo de debug
+                if (DEBUG) {
+                    addInitButton();
+                }
+            });
+    }
+    
+    // Adiciona um botão de inicialização manual para debugging
+    function addInitButton() {
+        // Verifica se o botão já existe
+        if (document.getElementById('btn-init-manual')) {
             return;
         }
         
-        // Para outras páginas, simula carregamento de página (MVP não carrega realmente arquivos HTML externos)
-        setTimeout(() => {
-            // Em um MVP real, aqui teríamos o código para carregar a página via fetch ou XMLHttpRequest
-            // Para simplificar, apenas exibimos uma mensagem de página em construção
-            
-            let pageTitle = formatPageTitle(pageName);
-            let pageContent = `
-                <div class="page-header">
-                    <h1>${pageTitle}</h1>
-                    <div class="breadcrumb">
-                        <span>Home</span> / <span>${pageTitle}</span>
-                    </div>
-                </div>
-                <div class="content-fade-in">
-                    <div class="card" style="padding: 30px; text-align: center;">
-                        <h2 style="margin-bottom: 20px;">Página em Desenvolvimento</h2>
-                        <p style="margin-bottom: 20px;">Esta funcionalidade será implementada nas próximas sprints do MVP.</p>
-                        <button class="btn" onclick="history.back()">Voltar</button>
-                    </div>
-                </div>
-            `;
-            
-            // Páginas específicas podem ter conteúdo especial aqui
-            if (pageName === 'mapa-mesas') {
-                pageContent = getMapaMesasTemplate();
-            }
-            
-            contentArea.innerHTML = pageContent;
-            updateActiveMenu(pageName);
-            loadingIndicator.style.display = 'none';
-            
-            // Atualizar a URL
-            updateUrl(pageName);
-        }, 500); // Simula o tempo de carregamento
+        const btn = document.createElement('button');
+        btn.id = 'btn-init-manual';
+        btn.textContent = 'Inicializar Interatividade';
+        btn.className = 'btn btn-primary';
+        btn.style.position = 'fixed';
+        btn.style.bottom = '20px';
+        btn.style.right = '20px';
+        btn.style.zIndex = '9999';
+        
+        btn.addEventListener('click', function() {
+            debug('Inicialização manual solicitada');
+            initializeInteractiveElements();
+            showNotification('Elementos interativos inicializados manualmente', 'info');
+        });
+        
+        document.body.appendChild(btn);
     }
     
     // Template básico para o mapa de mesas
@@ -539,6 +1303,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault(); // Impede a navegação padrão
             
             const pageName = pageLink.getAttribute('data-page');
+            debug(`Link clicado para página: ${pageName}`);
             loadPage(pageName);
             
             // Fecha o menu em dispositivos móveis
@@ -599,6 +1364,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 .has-submenu.open .submenu li {
                     opacity: 1;
                     transform: translateY(0);
+                }
+                
+                /* Estilos para mensagem de erro */
+                .error-message {
+                    background-color: #fff3f3;
+                    border: 1px solid #ffcdd2;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 20px 0;
+                    text-align: center;
+                }
+                
+                .error-message h2 {
+                    color: #d32f2f;
+                    margin-bottom: 10px;
+                }
+                
+                /* Estilos para o botão de inicialização manual em modo de debug */
+                #btn-init-manual {
+                    opacity: 0.8;
+                    transition: opacity 0.3s ease;
+                }
+                
+                #btn-init-manual:hover {
+                    opacity: 1;
                 }
             `;
             document.head.appendChild(styleSheet);
@@ -849,4 +1639,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Carrega a página inicial ou a definida na URL
     loadPageFromUrl();
+    
+    // Expõe funções importantes globalmente para debugging
+    window.appUtils = {
+        loadPage,
+        showNotification,
+        initializeInteractiveElements,
+        debug
+    };
 });

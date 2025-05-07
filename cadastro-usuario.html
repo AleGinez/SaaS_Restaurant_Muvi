@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro de Usuários - Recanto Rancho do Peixe">
+    <title>Cadastro de Usuários - Recanto Rancho do Peixe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu Principal -->
+        <aside class="sidebar" aria-label="Menu principal">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/150/80" alt="Logo Recanto Rancho do Peixe" class="logo">
+                <h2>Recanto Rancho do Peixe</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Foto do usuário" class="user-avatar">
+                <div class="user-details">
+                    <span class="user-name">Paulo Palazi</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+            </div>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a href="#" data-page="dashboard">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item has-submenu">
+                        <button class="submenu-toggle" aria-expanded="false" aria-controls="submenu-pedidos">
+                            <i class="fas fa-utensils" aria-hidden="true"></i>
+                            <span>Pedidos</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-pedidos">
+                            <li><a href="#" data-page="pedidos">Novos Pedidos</a></li>
+                            <li><a href="#" data-page="pedidos-mesa">Pedidos de Mesa</a></li>
+                            <li><a href="#" data-page="pedidos-viagem">Pedidos para Viagem</a></li>
+                            <li><a href="#" data-page="pedidos-delivery">Pedidos de Delivery</a></li>
+                            <li><a href="#" data-page="pedidos-andamento">Pedidos em Andamento</a></li>
+                            <li><a href="#" data-page="historico-pedidos">Histórico de Pedidos</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu de Configurações - Onde fica o Cadastro de Usuários -->
+                    <li class="menu-item has-submenu active open">
+                        <button class="submenu-toggle" aria-expanded="true" aria-controls="submenu-configuracoes">
+                            <i class="fas fa-cog" aria-hidden="true"></i>
+                            <span>Configurações</span>
+                            <i class="fas fa-chevron-down submenu-arrow" aria-hidden="true"></i>
+                        </button>
+                        <ul class="submenu" id="submenu-configuracoes">
+                            <li class="active"><a href="#" data-page="usuarios">Usuários</a></li>
+                            <li><a href="#" data-page="cadastro-funcionarios">Funcionários</a></li>
+                            <li><a href="#" data-page="perfis-permissoes">Perfis e Permissões</a></li>
+                            <li><a href="#" data-page="configuracoes-gerais">Configurações Gerais</a></li>
+                            <li><a href="#" data-page="integracao-fiscal">Integração Fiscal</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Outros itens de menu omitidos para brevidade -->
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#suporte" aria-label="Suporte">
+                    <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    <span>Suporte</span>
+                </a>
+                <a href="#sair" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" aria-label="Toggle sidebar menu">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                
+                <div class="search-bar">
+                    <label for="global-search" class="sr-only">Pesquisar</label>
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="global-search" placeholder="Pesquisar usuários...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notifications" aria-label="3 notificações">
+                        <i class="fas fa-bell" aria-hidden="true"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="btn-novo-usuario">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i>
+                        <span>Novo Usuário</span>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="content-area">
+                <section class="page-header">
+                    <div class="page-title-area">
+                        <h1>Cadastro de Usuários</h1>
+                        <div class="breadcrumb" aria-label="breadcrumb">
+                            <a href="#">Home</a> / <a href="#">Configurações</a> / <span>Usuários</span>
+                        </div>
+                    </div>
+                    
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" id="btn-filtros">
+                            <i class="fas fa-filter" aria-hidden="true"></i>
+                            <span>Filtros</span>
+                        </button>
+                        <button class="btn btn-primary" id="btn-exportar">
+                            <i class="fas fa-file-export" aria-hidden="true"></i>
+                            <span>Exportar</span>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Formulário de Cadastro -->
+                <div class="card-container">
+                    <div class="cadastro-header">
+                        <div class="cadastro-title">
+                            <i class="fas fa-user-shield" aria-hidden="true"></i>
+                            <h2>Dados do Usuário</h2>
+                        </div>
+                        <div class="cadastro-status">
+                            <label for="usuario-status" class="status-label">Status:</label>
+                            <select id="usuario-status" class="status-select">
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <form id="form-cadastro-usuario" class="form-cadastro">
+                        <!-- Tab de navegação -->
+                        <div class="tabs-container">
+                            <div class="form-tabs" role="tablist">
+                                <button type="button" id="tab-pessoal-btn" class="form-tab active" role="tab" aria-selected="true" aria-controls="tab-pessoal-content">
+                                    <i class="fas fa-user" aria-hidden="true"></i> Dados Pessoais
+                                </button>
+                                <button type="button" id="tab-acesso-btn" class="form-tab" role="tab" aria-selected="false" aria-controls="tab-acesso-content">
+                                    <i class="fas fa-lock" aria-hidden="true"></i> Dados de Acesso
+                                </button>
+                                <button type="button" id="tab-permissoes-btn" class="form-tab" role="tab" aria-selected="false" aria-controls="tab-permissoes-content">
+                                    <i class="fas fa-shield-alt" aria-hidden="true"></i> Perfil e Permissões
+                                </button>
+                            </div>
+                            
+                            <!-- Conteúdo das Tabs -->
+                            <div class="tab-content-container">
+                                <!-- Tab Dados Pessoais -->
+                                <div id="tab-pessoal-content" class="tab-content active" role="tabpanel" aria-labelledby="tab-pessoal-btn">
+                                    <div class="form-section">
+                                        <div class="form-section-row">
+                                            <div class="form-photo-container">
+                                                <div class="form-photo">
+                                                    <img src="/api/placeholder/150/150" alt="Foto do Usuário" id="usuario-foto-preview">
+                                                    <div class="photo-overlay">
+                                                        <i class="fas fa-camera" aria-hidden="true"></i>
+                                                    </div>
+                                                </div>
+                                                <input type="file" id="usuario-foto" accept="image/*" class="hidden">
+                                                <label for="usuario-foto" class="btn-photo">Alterar Foto</label>
+                                            </div>
+                                            
+                                            <div class="form-fields">
+                                                <div class="form-row">
+                                                    <div class="form-group required">
+                                                        <label for="usuario-nome">Nome Completo</label>
+                                                        <input type="text" id="usuario-nome" name="nome" required placeholder="Nome completo do usuário">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-row">
+                                                    <div class="form-group required">
+                                                        <label for="usuario-email">E-mail</label>
+                                                        <input type="email" id="usuario-email" name="email" required placeholder="email@exemplo.com">
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="usuario-telefone">Telefone</label>
+                                                        <input type="tel" id="usuario-telefone" name="telefone" placeholder="(00) 00000-0000">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label for="usuario-funcionario">Vinculado ao Funcionário</label>
+                                                        <select id="usuario-funcionario" name="funcionario_id">
+                                                            <option value="">Selecione um funcionário (opcional)</option>
+                                                            <option value="1">João da Silva - Garçom</option>
+                                                            <option value="2">Maria Oliveira - Cozinheira</option>
+                                                            <option value="3">Pedro Santos - Gerente</option>
+                                                            <option value="4">Ana Souza - Caixa</option>
+                                                        </select>
+                                                        <div class="form-help">Vincula este usuário a um funcionário já cadastrado no sistema</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tab Dados de Acesso -->
+                                <div id="tab-acesso-content" class="tab-content" role="tabpanel" aria-labelledby="tab-acesso-btn" hidden>
+                                    <div class="form-section">
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="usuario-username">Nome de Usuário</label>
+                                                <input type="text" id="usuario-username" name="username" required placeholder="Nome para login (sem espaços)">
+                                                <div class="form-help">Mínimo de 5 caracteres, apenas letras e números.</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="usuario-senha">Senha</label>
+                                                <div class="input-with-icon">
+                                                    <input type="password" id="usuario-senha" name="senha" required>
+                                                    <button type="button" class="icon-button" id="btn-toggle-senha" aria-label="Mostrar/Ocultar Senha">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="form-help">Mínimo de 8 caracteres, incluindo letras maiúsculas, minúsculas e números.</div>
+                                            </div>
+                                            
+                                            <div class="form-group required">
+                                                <label for="usuario-confirmar-senha">Confirmar Senha</label>
+                                                <div class="input-with-icon">
+                                                    <input type="password" id="usuario-confirmar-senha" name="confirmar_senha" required>
+                                                    <button type="button" class="icon-button" id="btn-toggle-confirmar-senha" aria-label="Mostrar/Ocultar Senha">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Configurações Adicionais</span>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="usuario-pin">PIN de Acesso Rápido (Opcional)</label>
+                                                <input type="text" id="usuario-pin" name="pin" maxlength="6" placeholder="123456">
+                                                <div class="form-help">Para acesso rápido em terminais PDV (6 dígitos numéricos)</div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="usuario-tema">Tema da Interface</label>
+                                                <select id="usuario-tema" name="tema">
+                                                    <option value="default">Padrão</option>
+                                                    <option value="dark">Escuro</option>
+                                                    <option value="light">Claro</option>
+                                                    <option value="high-contrast">Alto Contraste</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="usuario-reset-senha">Redefinir senha no próximo login?</label>
+                                                <div class="toggle-switch">
+                                                    <input type="checkbox" id="usuario-reset-senha" name="reset_senha">
+                                                    <label for="usuario-reset-senha" class="switch-label"></label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="usuario-autenticacao">Autenticação em duas etapas</label>
+                                                <div class="toggle-switch">
+                                                    <input type="checkbox" id="usuario-autenticacao" name="autenticacao_duas_etapas">
+                                                    <label for="usuario-autenticacao" class="switch-label"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-outline" id="btn-gerar-senha">
+                                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                                    <span>Gerar Senha Aleatória</span>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-outline" id="btn-enviar-credenciais">
+                                                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                                                    <span>Enviar Credenciais por Email</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tab Perfil e Permissões -->
+                                <div id="tab-permissoes-content" class="tab-content" role="tabpanel" aria-labelledby="tab-permissoes-btn" hidden>
+                                    <div class="form-section">
+                                        <div class="form-row">
+                                            <div class="form-group required">
+                                                <label for="usuario-perfil">Perfil de Acesso</label>
+                                                <select id="usuario-perfil" name="perfil" required>
+                                                    <option value="">Selecione um perfil</option>
+                                                    <option value="admin">Administrador</option>
+                                                    <option value="gerente">Gerente</option>
+                                                    <option value="supervisor">Supervisor</option>
+                                                    <option value="caixa">Caixa</option>
+                                                    <option value="garcom">Garçom</option>
+                                                    <option value="cozinha">Cozinha</option>
+                                                    <option value="entregador">Entregador</option>
+                                                    <option value="visualizacao">Apenas Visualização</option>
+                                                </select>
+                                                <div class="form-help">O perfil determina o conjunto básico de permissões do usuário</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-divider">
+                                            <span>Permissões Específicas</span>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-utensils" aria-hidden="true"></i>
+                                                    <h3>Pedidos</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="pedidos">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-visualizar" name="permissoes[]" value="pedidos_visualizar">
+                                                    <label for="perm-pedidos-visualizar">Visualizar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-criar" name="permissoes[]" value="pedidos_criar">
+                                                    <label for="perm-pedidos-criar">Criar Novos Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-editar" name="permissoes[]" value="pedidos_editar">
+                                                    <label for="perm-pedidos-editar">Editar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-cancelar" name="permissoes[]" value="pedidos_cancelar">
+                                                    <label for="perm-pedidos-cancelar">Cancelar Pedidos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-pedidos-desconto" name="permissoes[]" value="pedidos_desconto">
+                                                    <label for="perm-pedidos-desconto">Aplicar Descontos</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-cash-register" aria-hidden="true"></i>
+                                                    <h3>Financeiro</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="financeiro">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-visualizar" name="permissoes[]" value="financeiro_visualizar">
+                                                    <label for="perm-financeiro-visualizar">Visualizar Financeiro</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-pagamentos" name="permissoes[]" value="financeiro_pagamentos">
+                                                    <label for="perm-financeiro-pagamentos">Receber Pagamentos</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-fechamento" name="permissoes[]" value="financeiro_fechamento">
+                                                    <label for="perm-financeiro-fechamento">Fechamento de Caixa</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-financeiro-relatorios" name="permissoes[]" value="financeiro_relatorios">
+                                                    <label for="perm-financeiro-relatorios">Relatórios Financeiros</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="permission-group">
+                                            <div class="permission-header">
+                                                <div class="permission-title">
+                                                    <i class="fas fa-cog" aria-hidden="true"></i>
+                                                    <h3>Configurações</h3>
+                                                </div>
+                                                <div class="permission-actions">
+                                                    <button type="button" class="btn-select-all" data-group="configuracoes">Selecionar Todos</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="permission-items">
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-visualizar" name="permissoes[]" value="config_visualizar">
+                                                    <label for="perm-config-visualizar">Visualizar Configurações</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-usuarios-gerenciar" name="permissoes[]" value="usuarios_gerenciar">
+                                                    <label for="perm-usuarios-gerenciar">Gerenciar Usuários</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-funcionarios-gerenciar" name="permissoes[]" value="funcionarios_gerenciar">
+                                                    <label for="perm-funcionarios-gerenciar">Gerenciar Funcionários</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-sistema" name="permissoes[]" value="config_sistema">
+                                                    <label for="perm-config-sistema">Configurações do Sistema</label>
+                                                </div>
+                                                <div class="permission-item">
+                                                    <input type="checkbox" id="perm-config-backup" name="permissoes[]" value="config_backup">
+                                                    <label for="perm-config-backup">Gerenciar Backups</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-observation">
+                            <div class="form-group">
+                                <label for="usuario-observacoes">Observações</label>
+                                <textarea id="usuario-observacoes" name="observacoes" rows="3" placeholder="Observações adicionais sobre o usuário..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="form-actions-left">
+                                <button type="button" class="btn btn-danger" id="btn-excluir-usuario">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                    <span>Excluir</span>
+                                </button>
+                            </div>
+                            
+                            <div class="form-actions-right">
+                                <button type="button" class="btn btn-secondary" id="btn-cancelar">
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                    <span>Cancelar</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btn-salvar">
+                                    <i class="fas fa-save" aria-hidden="true"></i>
+                                    <span>Salvar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Listagem de Usuários (inicialmente oculta, e mostrada após salvar ou cancelar) -->
+                <div class="listagem-container hidden" id="listagem-usuarios">
+                    <div class="listagem-header">
+                        <div class="listagem-filtros">
+                            <div class="filtro-item">
+                                <label for="filtro-status">Status:</label>
+                                <select id="filtro-status">
+                                    <option value="todos">Todos</option>
+                                    <option value="ativo">Ativos</option>
+                                    <option value="inativo">Inativos</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filtro-item">
+                                <label for="filtro-perfil">Perfil:</label>
+                                <select id="filtro-perfil">
+                                    <option value="todos">Todos</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="gerente">Gerente</option>
+                                    <option value="caixa">Caixa</option>
+                                    <option value="garçom">Garçom</option>
+                                    <option value="cozinha">Cozinha</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="listagem-acoes">
+                            <button class="btn btn-outline" id="btn-limpar-filtros">
+                                <i class="fas fa-sync" aria-hidden="true"></i>
+                                <span>Limpar Filtros</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table" id="tabela-usuarios">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Perfil</th>
+                                    <th>Último Acesso</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Paulo Palazi</span>
+                                                <span class="user-role">Administrador</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>paulo@exemplo.com</td>
+                                    <td>Administrador</td>
+                                    <td>Hoje, 10:45</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Maria Silva</span>
+                                                <span class="user-role">Gerente</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>maria@exemplo.com</td>
+                                    <td>Gerente</td>
+                                    <td>Ontem, 18:30</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">João Oliveira</span>
+                                                <span class="user-role">Caixa</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>joao@exemplo.com</td>
+                                    <td>Caixa</td>
+                                    <td>10/05/2025</td>
+                                    <td><span class="status-badge active">Ativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-row">
+                                            <img src="/api/placeholder/40/40" alt="Foto" class="user-img">
+                                            <div class="user-info">
+                                                <span class="user-name">Carla Santos</span>
+                                                <span class="user-role">Cozinha</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>carla@exemplo.com</td>
+                                    <td>Cozinha</td>
+                                    <td>05/05/2025</td>
+                                    <td><span class="status-badge inactive">Inativo</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn" aria-label="Editar">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="action-btn" aria-label="Visualizar">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-footer">
+                        <div class="table-info">Mostrando 1-4 de 4 usuários</div>
+                        <div class="table-pagination">
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <span class="pagination-current">1</span>
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Confirmação para Deletar -->
+    <div class="modal-container" id="modal-confirmar-deletar" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirmar Exclusão</h3>
+                <button class="modal-close" aria-label="Fechar modal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este usuário?</p>
+                <p class="warning-text">Esta ação não pode ser desfeita e pode afetar o acesso ao sistema.</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+                <button class="btn btn-danger" id="btn-confirmar-excluir">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área para notificações do sistema -->
+    <div class="notifications-container" aria-live="polite"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    <script src="cadastro-usuario.js"></script>
+</body>
+</html>

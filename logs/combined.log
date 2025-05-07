@@ -99,3 +99,52 @@
 {"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:12:21.958Z"}
 {"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:12:21.960Z"}
 {"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:12:27.048Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:35:56.674Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:36:02.297Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:36:02.302Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:36:36.616Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:37:25.265Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:37:31.543Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:38:02.007Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:38:02.009Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:45:08.584Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:45:34.022Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:45:34.024Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:45:40.901Z"}
+{"level":"warn","message":"Limite de tentativas de login excedido - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:45:40.902Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:47:05.568Z"}
+{"level":"warn","message":"Limite de tentativas de login excedido - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:47:05.569Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:47:11.785Z"}
+{"level":"warn","message":"Limite de tentativas de login excedido - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:47:11.786Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T08:47:21.434Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:47:37.935Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:48:06.582Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:48:06.585Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:48:26.330Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:49:13.742Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:49:13.744Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T08:50:04.434Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T09:26:28.219Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T09:26:28.224Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-02T09:26:58.675Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-02T09:27:01.758Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-07T01:40:06.546Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:40:15.676Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:40:49.180Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:40:49.183Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:41:01.021Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:45:28.365Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:45:28.367Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T01:45:38.182Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T02:08:58.813Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T02:08:58.819Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T02:09:09.239Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T02:31:17.470Z"}
+{"level":"info","message":"POST /api/auth/logout - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T03:01:39.371Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T03:01:50.330Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T03:25:36.134Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T03:28:07.145Z"}
+{"level":"info","message":"Servidor rodando na porta 3000 em modo development","service":"api-restaurante","timestamp":"2025-05-07T03:46:17.430Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T03:46:42.455Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T04:03:25.624Z"}
+{"level":"info","message":"POST /api/auth/login - IP: ::1","service":"api-restaurante","timestamp":"2025-05-07T04:04:44.278Z"}
